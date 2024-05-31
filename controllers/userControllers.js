@@ -20,8 +20,8 @@ const createUser = async (req, res) => {
     if (!firstName || !lastName ||!userName || !email || !password) {
        
         return res.json({
-            'sucess': false,
-            'message': 'Plz enter all details!'
+            sucess: false,
+            message: 'Plz enter all details!'
         })
 
     }
@@ -36,8 +36,8 @@ const createUser = async (req, res) => {
         
         if (existingUser) {
             return res.json({
-                'status': false,
-                'message': 'User Already Exist!'
+                status: false,
+                message: 'User Already Exist!'
             })
         }
         // Step 5.1.1 Stop the process
@@ -63,8 +63,8 @@ const createUser = async (req, res) => {
 
         // Send the response
         res.json({
-            'sucess': true,
-            'message': 'User Created Sucesfully'
+            sucess: true,
+            message: 'User Created Sucesfully'
         })
 
 
@@ -76,8 +76,8 @@ const createUser = async (req, res) => {
     } catch (error) {
         console.log(error)
         res.json({
-            'sucess': false,
-            "message": 'Internal Server Error!'
+            sucess: false,
+            message: 'Internal Server Error!'
         })
 
     }
@@ -99,8 +99,8 @@ const loginUser = async (req, res) => {
     //Validation
     if (!email  || !password ) {
         return res.json({
-            'sucess': false,
-            'message': 'Please enter all the fields'
+            sucess: false,
+            message: 'Please enter all the fields'
         })
     }
 
@@ -114,8 +114,8 @@ const loginUser = async (req, res) => {
         // not found (error message)
         if(!user){
             return res.json({
-                'sucess': false,
-                'message': 'User Doesnt Exist !'
+                sucess: false,
+                message: 'User Doesnt Exist !'
             })
 
         }
@@ -125,8 +125,8 @@ const loginUser = async (req, res) => {
 
         if (!isValidPassword){
             return res.json({
-                'sucess': false,
-                'message': 'Password Doesnt Matched !'
+                sucess: false,
+                message: 'Password Doesnt Matched !'
             })
 
         }
@@ -140,10 +140,10 @@ const loginUser = async (req, res) => {
 
         // response (token, user data)
         res.json({
-            'sucess': true,
-            'message': 'User Logined Sucessfully !',
-            'token' : token,
-            'userData' : user
+            sucess: true,
+            message: 'User Logined Sucessfully !',
+            token : token,
+            userData : user
         })
         
 
@@ -151,8 +151,8 @@ const loginUser = async (req, res) => {
     } catch (error) {
         console.log(error)
         return res.json({
-            'sucess': false,
-            'message': 'Internal Server Error'
+            sucess: false,
+            message: 'Internal Server Error'
         })
     }
 }
@@ -174,8 +174,6 @@ module.exports = {
     createUser,
     loginUser
 }
-
-
 
 
 
