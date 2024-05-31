@@ -1,9 +1,5 @@
 const mongoose = require('mongoose')
 
-// External File 
-//Functions (Connection)
-// Make a unique function name
-// Export 
 
 const Database = () => {
     mongoose.connect(process.env.MONGODB_LOCAL).then(() => {
@@ -11,5 +7,5 @@ const Database = () => {
     })
 }
 
-// Exporting the function
+
 module.exports = Database
