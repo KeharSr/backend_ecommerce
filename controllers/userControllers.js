@@ -40,17 +40,14 @@ const createUser = async (req, res) => {
                 message: 'User Already Exist!'
             })
         }
-        // Step 5.1.1 Stop the process
-        //Done
-
-        // Hashing/Encryption of the password
+       
         const randomSalt = await bcrypt.genSalt(10)
         const hasedPassword = await bcrypt.hash(password, randomSalt)
 
 
-        // Step 5.2 if user is new:
+        
         const newUser = new userModel({
-            // Database Fields : Client's Value
+            
             firstName: firstName,
             lastName: lastName,
             userName: userName,
@@ -58,19 +55,17 @@ const createUser = async (req, res) => {
             password: hasedPassword
         })
 
-        // Save the database
+        
         await newUser.save()
 
-        // Send the response
+        
         res.json({
             sucess: true,
             message: 'User Created Sucesfully'
         })
 
 
-        // Step 5.2.1 Hash the password
-        // Step 5,2,2 Save to the database 
-        // 5.2.3 Send Sucessfull response
+        
 
 
     } catch (error) {
@@ -87,16 +82,16 @@ const createUser = async (req, res) => {
 
 }
 
-// login Function
+
 
 const loginUser = async (req, res) => {
-    // res.send('Login API is working!')
+   
 
     console.log(req.body)
-    //Destructuring
+    
     const { email, password } = req.body;
 
-    //Validation
+   
     if (!email  || !password ) {
         return res.json({
             sucess: false,
@@ -106,22 +101,19 @@ const loginUser = async (req, res) => {
 
 
     try {
-        // find user (email)
+        
         const user = await userModel.findOne({ email: email });
-        // found data : firstName, lastname, email, password
-
-
-        // not found (error message)
+        
         if(!user){
             return res.json({
                 sucess: false,
-                message: 'User Doesnt Exist !'
+                message: 'Email Doesnt Exist !'
             })
 
         }
-        // Compare password (bcrypt)
+       
         const isValidPassword = await bcrypt.compare(password,user.password)
-        // not valid (error)
+        
 
         if (!isValidPassword){
             return res.json({
@@ -130,7 +122,7 @@ const loginUser = async (req, res) => {
             })
 
         }
-        //  token (Generate - user Data + KEY)
+        
         const token = await jwt.sign(
             {
                 id : user._id   },
@@ -138,7 +130,7 @@ const loginUser = async (req, res) => {
 
         )
 
-        // response (token, user data)
+        
         res.json({
             sucess: true,
             message: 'User Logined Sucessfully !',
@@ -157,19 +149,7 @@ const loginUser = async (req, res) => {
     }
 }
 
-// Check incoming data
 
-
-
-//try catch
-
-
-
-
-
-
-
-//exporting
 module.exports = {
     createUser,
     loginUser
