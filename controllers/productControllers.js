@@ -1,5 +1,6 @@
 const path = require('path');
 const productModel = require('../models/productModel');
+const fs = require('fs');
 
 const createProduct = async (req, res) => {
     console.log(req.body);
@@ -7,8 +8,8 @@ const createProduct = async (req, res) => {
     const { productName, productPrice, productCategory, productDescription, productImage } = req.body;
 
     if (!productName || !productPrice || !productCategory || !productDescription || !productImage) {
-        return res.json({
-            status: false,
+        return res.status(400).json({
+            sucess: false,
             message: 'Plz enter all details!'
         })
     }
@@ -24,16 +25,19 @@ const createProduct = async (req, res) => {
 
         await newProduct.save()
 
-        res.json({
-            status: true,
+        res.status(201).json({
+            sucess: true,
             message: 'Product Created Successfully!'
         })
 
     } catch (error) {
         console.log(error);
-        res.json({
+        res.status(500).json({
             status: false,
             message: 'Internal Server Error!'
         })
     }
 }
+module.exports = {
+    createProduct
+};

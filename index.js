@@ -6,7 +6,10 @@ const cors = require('cors')
 
 const { options } = require('./routes/userRoutes');
 
+
 const app = express();
+
+
 
 const corsOptions ={
     origin : true,
@@ -33,6 +36,8 @@ app.get('/Lensify',(req,res)=>{
 
 
 app.use('/api/user', require('./routes/userRoutes'))
+
+app.use('/api/products', require('./routes/productRoutes'))
 
 
 app.listen(PORT, ()=>{
