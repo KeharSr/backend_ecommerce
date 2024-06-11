@@ -3,3 +3,5 @@ const productController = require('../controllers/productControllers')
 
 
 router.post('/create', productController.createProduct)
+
+module.exports = router
