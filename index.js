@@ -4,6 +4,8 @@ const Database = require('./database/database');
 const dotenv = require('dotenv');
 const cors = require('cors')
 
+const fileUpload = require('express-fileupload');
+
 const { options } = require('./routes/userRoutes');
 
 
@@ -22,6 +24,7 @@ const corsOptions ={
 
 app.use(express.json())
 
+app.use(fileUpload());
 
 dotenv.config()
 
