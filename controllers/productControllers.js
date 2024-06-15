@@ -82,6 +82,9 @@ const deleteProduct = async (req, res) => {
 
     }
 }
+
+// get single products
+
 // get the all products
 
 const getAllProducts = async (req, res) => {
