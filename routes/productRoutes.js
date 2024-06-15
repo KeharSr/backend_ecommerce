@@ -11,6 +11,8 @@ router.delete('/delete_product/:id',productController.deleteProduct)
 
 router.put('/update_product/:id',productController.updateProduct)
 
+router.get('/get_single_product/:id',productController.getSingleProduct)
+
 
 
 module.exports = router

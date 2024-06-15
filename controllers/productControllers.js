@@ -62,16 +62,16 @@ const deleteProduct = async (req, res) => {
     try{
         await productModel.findByIdAndDelete(req.params.id)
         res.status(200).json({
-            "success": true,
-            "message": "Product deleted successfully"
+            success: true,
+            message: "Product deleted successfully"
         })
 
     }catch (error){
         console.log(error)
         res.status(500).json({
-            "success": false,
-            "message": "Internal server error",
-            "error": error
+            success: false,
+            message: "Internal server error",
+            error: error
         })
     
     
@@ -175,7 +175,7 @@ const updateProduct = async (req, res) => {
             
         }
         //update the data
-        const updateProduct = await productModel.findByIdAndUpdate(req.params.id, req.body)
+        const updateProduct = await productModel.findByIdAndUpdate(req.params.id, req.body,{new:true})
         res.status(200).json({
             success: true,
             message: "Product updated successfully",
@@ -205,6 +205,7 @@ const updateProduct = async (req, res) => {
 module.exports = {
     createProduct,
     getAllProducts,
+    getSingleProduct,
     deleteProduct,
     updateProduct
 };
