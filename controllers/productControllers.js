@@ -85,6 +85,40 @@ const deleteProduct = async (req, res) => {
 
 // get single products
 
+const getSingleProduct = async (req, res) => {
+    //get product id from url
+    const productId = req.params.id
+ 
+    try {
+        const product = await productModel.findById(productId)
+ 
+        if (!product) {
+            res.status(400).json({
+                "success": false,
+                "message": "No product found",
+            })
+        }
+        res.status(201).json({
+            "success": true,
+            "message": "product fetched",
+            "product": product
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            "success": false,
+            "messgae": "internal server error",
+            "error": error,
+        })
+ 
+    }
+ 
+ 
+ 
+}
+
+
+
 // get the all products
 
 const getAllProducts = async (req, res) => {
