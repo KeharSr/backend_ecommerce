@@ -19,7 +19,7 @@ const createUser = async (req, res) => {
     
     if (!firstName || !lastName ||!userName || !email || !password) {
        
-        return res.json({
+        return res.status().json({
             sucess: false,
             message: 'Plz enter all details!'
         })
@@ -35,8 +35,8 @@ const createUser = async (req, res) => {
 
         
         if (existingUser) {
-            return res.json({
-                status: false,
+            return res.status(400).json({
+                sucess: false,
                 message: 'User Already Exist!'
             })
         }

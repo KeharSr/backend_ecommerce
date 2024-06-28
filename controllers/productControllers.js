@@ -28,7 +28,7 @@ const createProduct = async (req, res) => {
 
     try {
 
-        const imageName='${Date.now()}_${productImage.name}'
+        const imageName=`${Date.now()}_${productImage.name}`
         const imagePath = path.join(__dirname, `../public/products/${imageName}`);
         await productImage.mv(imagePath);
 
@@ -198,8 +198,54 @@ const updateProduct = async (req, res) => {
 
 }
 
+const paginatonProducts = async (req, res) => {
 
-// delete the product
+    // results  page number
+    const pageNo = req.query.page || 1;
+  
+    // Per page 2 products
+    const resultperPage = 2;
+  
+    try{
+      // Find all products,skip the products, limit the products
+      const products = await productModel.find({})
+      .skip((pageNo - 1) * resultperPage)
+      .limit(resultperPage);
+  
+      // if page 6 is requested, result 0
+      if(products.length === 0){
+        return res.status(404).json({
+          success: false,
+          message: 'No products found',
+        })
+  
+       
+        
+      }
+  
+      //response
+      res.status(200).json({
+        success: true,
+        message: 'Products fetched successfully',
+        products: products,
+      })
+  
+      
+  
+  
+    }catch(error){
+      console.log(error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error',
+        error: error,
+      });
+    }
+  
+  }
+
+
+
 
 
 module.exports = {
@@ -207,5 +253,6 @@ module.exports = {
     getAllProducts,
     getSingleProduct,
     deleteProduct,
-    updateProduct
+    updateProduct,
+    paginatonProducts,
 };
