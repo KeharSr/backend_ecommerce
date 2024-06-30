@@ -202,15 +202,16 @@ const paginatonProducts = async (req, res) => {
 
     // results  page number
     const pageNo = req.query.page || 1;
+    const limit = req.query.limit || 10;
   
     // Per page 2 products
-    const resultperPage = 2;
+    
   
     try{
       // Find all products,skip the products, limit the products
       const products = await productModel.find({})
-      .skip((pageNo - 1) * resultperPage)
-      .limit(resultperPage);
+      .skip((pageNo - 1) * limit)
+      .limit(limit);
   
       // if page 6 is requested, result 0
       if(products.length === 0){
