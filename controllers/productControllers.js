@@ -119,7 +119,6 @@ const getSingleProduct = async (req, res) => {
 
 
 
-// get the all products
 
 const getAllProducts = async (req, res) => {
     try {
@@ -138,6 +137,8 @@ const getAllProducts = async (req, res) => {
         });
     }
 }
+
+
 
 // update product
 const updateProduct = async (req, res) => {
@@ -245,6 +246,48 @@ const paginatonProducts = async (req, res) => {
   
   }
 
+  //get products by category
+  const getProductsByCategory = async (req, res) => {
+    
+     category = req.query.category;
+    console.log(category);
+
+    const pageNo = req.query.page || 1;
+    const limit = req.query.limit || 10;
+  
+
+    if(category==='All'){
+        category=null
+    }
+
+    try {
+        const products = await productModel.find({...(category&&{productCategory:category})})
+        .skip((pageNo - 1) * limit)
+        .limit(limit);
+
+        if (!products || products.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'No products found for this category',
+            });
+        }
+
+        res.status(201).json({
+
+            success: true,
+            message: 'Products fetched successfully by category',
+            products: products,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error,
+        });
+    }
+};
+
 
 
 
@@ -256,4 +299,6 @@ module.exports = {
     deleteProduct,
     updateProduct,
     paginatonProducts,
+    getProductsByCategory
+    
 };
