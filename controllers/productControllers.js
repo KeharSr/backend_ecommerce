@@ -220,6 +220,8 @@ const paginatonProducts = async (req, res) => {
           success: false,
           message: 'No products found',
         })
+
+        
   
        
         
@@ -253,7 +255,7 @@ const paginatonProducts = async (req, res) => {
     console.log(category);
 
     const pageNo = req.query.page || 1;
-    const limit = req.query.limit || 10;
+    const limit = req.query.limit || 15;
   
 
     if(category==='All'){
