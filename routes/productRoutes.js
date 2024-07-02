@@ -1,22 +1,51 @@
+// const router = require('express').Router();
+// const productController = require('../controllers/productControllers');
+// const { authGuard, adminGuard } = require('../middleware/authGuard');
+
+
+// router.post('/create', productController.createProduct)
+
+// router.get('/get_all_products',authGuard, productController.getAllProducts,)
+
+// //delete product
+// router.delete('/delete_product/:id',productController.deleteProduct,adminGuard)
+
+// router.put('/update_product/:id',productController.updateProduct)
+
+// router.get('/get_single_product/:id',authGuard,productController.getSingleProduct,)
+
+// // pagination
+// router.get('/pagination', productController.paginatonProducts);
+
+
+
+
+
+// module.exports = router
+
 const router = require('express').Router();
 const productController = require('../controllers/productControllers');
 const { authGuard, adminGuard } = require('../middleware/authGuard');
 
+// Create a new product
+router.post('/create', productController.createProduct);
 
-router.post('/create', productController.createProduct)
+// Get all products (protected route with authGuard middleware)
+router.get('/get_all_products', authGuard, productController.getAllProducts);
 
-router.get('/get_all_products',authGuard, productController.getAllProducts,)
+// Get products by category
+router.get('/get_products_by_category', productController.getProductsByCategory);
 
-//delete product
-router.delete('/delete_product/:id',productController.deleteProduct,adminGuard)
+// Delete a product (protected route with adminGuard middleware)
+router.delete('/delete_product/:id', adminGuard, productController.deleteProduct);
 
-router.put('/update_product/:id',productController.updateProduct)
+// Update a product
+router.put('/update_product/:id', productController.updateProduct);
 
-router.get('/get_single_product/:id',authGuard,productController.getSingleProduct,)
+// Get a single product by ID (protected route with authGuard middleware)
+router.get('/get_single_product/:id', authGuard, productController.getSingleProduct);
 
-// pagination
+// Pagination example route
 router.get('/pagination', productController.paginatonProducts);
 
-
-
-module.exports = router
+module.exports = router;
