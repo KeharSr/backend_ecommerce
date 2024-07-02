@@ -301,6 +301,6 @@ module.exports = {
     deleteProduct,
     updateProduct,
     paginatonProducts,
-    getProductsByCategory
+    getProductsByCategory,
     
 };

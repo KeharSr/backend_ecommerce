@@ -1,6 +1,7 @@
 // import jwt
+const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
-const authGuard= (req, res, next) => {
+const authGuard= async (req, res, next) => {
     //check incoming data
     console.log(req.headers); // passed going to next
 
@@ -31,8 +32,15 @@ const authGuard= (req, res, next) => {
 
     // verify
     try{
-        const decodeUserData= jwt.verify(token, process.env.JWT_SECRET);
-        req.user= decodeUserData;
+        const decoded= jwt.verify(token, process.env.JWT_SECRET);
+        const user = await userModel.findById(decoded.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+    req.user = decoded;
         next();
 
     }catch(error){
@@ -82,6 +90,7 @@ const adminGuard= (req, res, next) => {
     // verify
     try{
         const decodeUserData= jwt.verify(token, process.env.JWT_SECRET);
+        console.log(decodeUserData);
         req.user= decodeUserData; //id, isAdmin
         if(!req.user.isAdmin){
             return res.status(400).json({
