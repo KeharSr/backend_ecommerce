@@ -8,9 +8,9 @@ const createProduct = async (req, res) => {
     console.log(req.body);
     console.log(req.files);
 
-    const { productName, productPrice, productCategory, productDescription } = req.body;
+    const { productName, productPrice, productCategory, productDescription,productQuantity } = req.body;
 
-    if (!productName || !productPrice || !productCategory || !productDescription) {
+    if (!productName || !productPrice || !productCategory || !productDescription, !productQuantity) {
         return res.status(400).json({
             success: false,
             message: 'Please enter all details!'
@@ -37,7 +37,10 @@ const createProduct = async (req, res) => {
             productPrice: productPrice,
             productCategory: productCategory,
             productDescription: productDescription,
-            productImage: imageName // Save the path of the image
+            productImage: imageName,
+            productQuantity:productQuantity
+            
+             // Save the path of the image
         });
 
         await newProduct.save();
@@ -99,9 +102,9 @@ const getSingleProduct = async (req, res) => {
             })
         }
         res.status(201).json({
-            "success": true,
-            "message": "product fetched",
-            "product": product
+            success: true,
+            message: "product fetched",
+            product: product
         })
     } catch (error) {
         console.log(error)

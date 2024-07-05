@@ -149,12 +149,39 @@ const loginUser = async (req, res) => {
     }
 }
 
+const getCurrentUser = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(" ")[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await userModel.findById(decoded.id).select('-password'); // Do not return the password
 
-module.exports = {
-    createUser,
-    loginUser
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found!'
+            });
+        }
+
+        res.json({
+            success: true,
+            user
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
 }
 
 
 
 
+
+module.exports = {
+    createUser,
+    loginUser,
+    getCurrentUser
+}

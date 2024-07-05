@@ -15,7 +15,6 @@ const userSchema = new mongoose.Schema({
         required : true
     },
 
-
     email : {
         type : String,
         required : true,
@@ -25,15 +24,12 @@ const userSchema = new mongoose.Schema({
         type : String,
         required : true
     },
-    // for the admin
+    
     isAdmin : {
         type : Boolean,
         default : false
     },
-    cart : {
-        type : Array,
-        default : []
-    }
+    
 
 })
 

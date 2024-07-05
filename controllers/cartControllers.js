@@ -2,6 +2,7 @@
 const path = require('path');
 const userModel = require('../models/userModel');
 const productModel = require('../models/productModel');
+const cartModel = require('../models/cartModel');
 const fs = require('fs');
 
 
@@ -19,9 +20,16 @@ const addToCart = async (req, res) => {
                 message: 'User not found!'
             });
         }
+   
 
-        user.cart.push(productId);
-        await user.save();
+        const cart = new cartModel({
+            productId: productId,
+            userId: id
+
+        
+        });
+
+        await cart.save();
 
         res.status(201).json({
             success: true,
