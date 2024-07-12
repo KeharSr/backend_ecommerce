@@ -1,20 +1,20 @@
-import mongoose  from "mongoose";
+const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
     userId:{
         type: String,
         required: true
     },
-    items:{
+    products:{
         type: Array,
         required: true
     },
-    amount:{
+    totalPrice:{
         type: Number,
         required: true
     },
-    adress:{
-        type: Object,
+    address:{
+        type: String,
         required: true
     },
     status:{
@@ -32,4 +32,4 @@ const orderSchema = new mongoose.Schema({
 });
 
 const Order = mongoose.model('order', orderSchema);
-export default Order;
+module.exports = Order;
