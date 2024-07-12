@@ -8,8 +8,8 @@ const fs = require('fs');
 
 // add items to user cart
 const addToCart = async (req, res) => {
-    const { productId } = req.body;
-    const  id  = req.user.id;
+    const { productId,quantity } = req.body;
+    const id = req.user.id;
     console.log(id);
 
     try {
@@ -20,13 +20,19 @@ const addToCart = async (req, res) => {
                 message: 'User not found!'
             });
         }
-   
-
+        const existingProduct = await cartModel.findOne({ productId: productId, userId: id });
+        if (existingProduct) {
+            return res.json({
+                success: false,
+                message: 'Product already in cart!'
+            });
+        }
         const cart = new cartModel({
             productId: productId,
-            userId: id
+            userId: id,
+            quantity: quantity
 
-        
+
         });
 
         await cart.save();
@@ -71,43 +77,23 @@ const removeFromCart = async (req, res) => {
 
 // fetch user cart data
 const getCart = async (req, res) => {
-    const  id  = req.user.id;
+    const id = req.user.id;
 
     try {
-        const user = await userModel.findById(id).populate('cart');
+        const user = await userModel.findById(id);
         if (!user) {
             return res.status(404).json({
                 success: false,
                 message: 'User not found!'
             });
         }
-        const carts = user.cart;
 
-        //  get product by id
-
-        const products = await productModel.find({
-            '_id': { $in: carts }
-        });
-
-        // count the product by id
-        const countbyProductId = carts.reduce((acc, value) => {
-            const count = value;
-            acc[count] = acc[count] ? acc[count] + 1 : 1;
-            return acc;
-        }, {});
-
-        // created a list including product and count
-        console.log(countbyProductId);
-        const cartItems = products.map(product => ({
-            product: product,
-            count: countbyProductId[product.id]
-        }));
+        const cartItems = await cartModel.find({ userId: id }).populate('productId');
+        console.log(cartItems);
 
         res.status(200).json({
             success: true,
             products: cartItems
-            
-
         });
 
     } catch (error) {
@@ -123,5 +109,6 @@ const getCart = async (req, res) => {
 module.exports = {
     addToCart,
     removeFromCart,
-    getCart
+    getCart,
+    
 }

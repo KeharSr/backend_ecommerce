@@ -13,11 +13,11 @@ const createUser = async (req, res) => {
     console.log(req.body);
 
     
-    const { firstName, lastName,userName, email, password } = req.body;
+    const { firstName, lastName,userName, email, phoneNumber, password } = req.body;
 
 
     
-    if (!firstName || !lastName ||!userName || !email || !password) {
+    if (!firstName || !lastName ||!userName || !email || !phoneNumber || !password) {
        
         return res.status().json({
             sucess: false,
@@ -52,6 +52,7 @@ const createUser = async (req, res) => {
             lastName: lastName,
             userName: userName,
             email: email,
+            phoneNumber:phoneNumber,
             password: hasedPassword
         })
 
@@ -162,9 +163,10 @@ const getCurrentUser = async (req, res) => {
             });
         }
 
-        res.json({
+        res.status(200).json({
             success: true,
-            user
+            message: 'User found!',
+            user: user
         });
 
     } catch (error) {
@@ -176,6 +178,40 @@ const getCurrentUser = async (req, res) => {
     }
 }
 
+const getToken = async (req, res) => {
+    try {
+      console.log(req.body);
+      const { id } = req.body;
+   
+      const user = await userModel.findById(id);
+      if (!user) {
+        return res.status(400).json({
+          success: false,
+          message: 'User not found',
+        });
+      }
+   
+      const token = await jwt.sign(
+            {
+                id : user._id, isAdmin : user.isAdmin},
+                process.env.JWT_SECRET
+      );
+   
+      return res.status(200).json({
+        success: true,
+        message: 'Token generated successfully!',
+        token: token,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+        success: false,
+        message: 'Internal Server Error',
+        error: error,
+      });
+    }
+  };
+
 
 
 
@@ -183,5 +219,6 @@ const getCurrentUser = async (req, res) => {
 module.exports = {
     createUser,
     loginUser,
-    getCurrentUser
+    getCurrentUser,
+    getToken
 }
