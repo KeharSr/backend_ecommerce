@@ -8,9 +8,9 @@ const createProduct = async (req, res) => {
     console.log(req.body);
     console.log(req.files);
 
-    const { productName, productPrice, productCategory, productDescription } = req.body;
+    const { productName, productPrice, productCategory, productDescription,productQuantity } = req.body;
 
-    if (!productName || !productPrice || !productCategory || !productDescription) {
+    if (!productName || !productPrice || !productCategory || !productDescription, !productQuantity) {
         return res.status(400).json({
             success: false,
             message: 'Please enter all details!'
@@ -37,7 +37,10 @@ const createProduct = async (req, res) => {
             productPrice: productPrice,
             productCategory: productCategory,
             productDescription: productDescription,
-            productImage: imageName // Save the path of the image
+            productImage: imageName,
+            productQuantity:productQuantity
+            
+             // Save the path of the image
         });
 
         await newProduct.save();
@@ -99,9 +102,9 @@ const getSingleProduct = async (req, res) => {
             })
         }
         res.status(201).json({
-            "success": true,
-            "message": "product fetched",
-            "product": product
+            success: true,
+            message: "product fetched",
+            product: product
         })
     } catch (error) {
         console.log(error)
@@ -249,23 +252,26 @@ const paginatonProducts = async (req, res) => {
   }
 
   //get products by category
-  const getProductsByCategory = async (req, res) => {
-    
-     category = req.query.category;
+
+
+const getProductsByCategory = async (req, res) => {
+    const category = req.query.category;
     console.log(category);
 
-    const pageNo = req.query.page || 1;
-    const limit = req.query.limit || 15;
-  
-
-    if(category==='All'){
-        category=null
-    }
+    const pageNo = parseInt(req.query.page || 1);
+    const limit = parseInt(req.query.limit || 10);
+    let products; // Declare products here to make it accessible throughout the function
 
     try {
-        const products = await productModel.find({...(category&&{productCategory:category})})
-        .skip((pageNo - 1) * limit)
-        .limit(limit);
+        if (category === 'All') {
+            products = await productModel.find({})
+                .skip((pageNo - 1) * limit)
+                .limit(limit);
+        } else {
+            products = await productModel.find({ ...(category && { productCategory: category }) })
+                .skip((pageNo - 1) * limit)
+                .limit(limit);
+        }
 
         if (!products || products.length === 0) {
             return res.status(400).json({
@@ -275,7 +281,6 @@ const paginatonProducts = async (req, res) => {
         }
 
         res.status(201).json({
-
             success: true,
             message: 'Products fetched successfully by category',
             products: products,
@@ -289,6 +294,53 @@ const paginatonProducts = async (req, res) => {
         });
     }
 };
+
+// const getProductsByCategory = async (req, res) => {
+//     let category = req.query.category;
+//     console.log(category);
+
+//     const pageNo = parseInt(req.query.page) || 1;
+//     const limit = parseInt(req.query.limit) || 15;
+
+//     // Initialize the query object. If category is "All", we want to fetch all products.
+//     const query = (category !== 'All' && category) ? { productCategory: category } : {};
+
+//     try {
+//         const products = await productModel.find(query)
+//             .skip((pageNo - 1) * limit)
+//             .limit(limit);
+
+//         const total = await productModel.countDocuments(query);
+
+//         if (!products.length) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: 'No products found for this category',
+//             });
+//         }
+
+//         const totalPages = Math.ceil(total / limit);
+
+//         res.status(200).json({
+//             success: true,
+//             message: 'Products fetched successfully by category',
+//             products: products,
+//             pagination: {
+//                 currentPage: pageNo,
+//                 totalPages: totalPages,
+//                 totalItems: total
+//             }
+//         });
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({
+//             success: false,
+//             message: 'Internal server error',
+//             error: 'An error occurred while fetching the products'
+//         });
+//     }
+// };
+
 
 
 

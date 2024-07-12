@@ -15,25 +15,28 @@ const userSchema = new mongoose.Schema({
         required : true
     },
 
-
     email : {
         type : String,
         required : true,
         unique : true
     },
+
+    phoneNumber:{
+        type : String,
+        required: true,
+        unique: true,
+    },
+
     password : {
         type : String,
         required : true
     },
-    // for the admin
+    
     isAdmin : {
         type : Boolean,
         default : false
     },
-    cart : {
-        type : Array,
-        default : []
-    }
+    
 
 })
 
