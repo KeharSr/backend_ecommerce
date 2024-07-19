@@ -49,8 +49,34 @@ const placeOrder = async (req, res) => {
     }
 }
 
+// verify order
+const verifyOrder = async (req, res) => {
+    const{orderId,success} = req.body;
+    try{
+        const order = await orderModel.findById(orderId);
+        if(!order){
+            return res.status(404).json({success:false,message: "Order not found"});
+        }
+        if(success==="true"){
+            await orderModel.findByIdAndUpdate(orderId, {payment: true});
+            res.status(200).json({success:true,message: "Payment verified successfully"});
+        }else{
+            await orderModel.findByIdAndDelete(orderId);
+            res.status(200).json({success:false,message: "Order deleted successfully"})
+        }      
+       
+    }catch(error){
+        console.error('Failed to verify order:', error);
+        res.status(500).json({
+            success:false,
+            message: "Internal server error"
+        });
+    }
+}
+
 module.exports = {
-    placeOrder
+    placeOrder,
+    verifyOrder
 };
 
 

@@ -24,12 +24,12 @@ const orderSchema = new mongoose.Schema({
     },
     address: {
         type: Object,
-        required: true,
         street: String,
         city: String,
         state: String,
         zip: String,
-        country: String
+        country: String,
+        required: true,
     },
     status: {
         type: String,
