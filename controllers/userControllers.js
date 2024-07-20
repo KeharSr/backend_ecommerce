@@ -212,6 +212,114 @@ const getToken = async (req, res) => {
     }
   };
 
+  const forgotPassword = async (req, res) => {
+    const { phone } = req.body;
+  
+    if (!phone) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter your phone number",
+      });
+    }
+    try{
+  
+      // finding user by phone number
+      const user = await userModel.findOne({ phone: phone });
+      if (!user) {
+        return res.status(400).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+  
+      // Generate OTP random 6 digit number
+      const otp = Math.floor(100000 + Math.random() * 900000);
+      // generate expiry time for OTP
+      const expiry = Date.now() + 10 * 60 * 1000;
+      // save to database for verification
+      user.resetPasswordOTP = otp;
+      user.resetPasswordExpires = expiry;
+      await user.save();
+      // set expiry time for OTP
+  
+      // send OTP to registered phone number
+      const isSent = await sendOtp(phone, otp)
+      if(isSent){
+        return res.status(400).json({
+          sucess : false,
+          message : 'Error sending OTP'
+        })
+      }
+  
+      //If sucess
+      res.status(200).json({
+        sucess : true,
+        message : "OTP send sucesfully"
+  
+      })
+      
+  
+  
+  
+    }catch(error){
+      console.log(error);
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error",
+      });
+    }
+  }
+
+  const verifyOtpAndResetPassword = async (req, res) => {
+    const { phone, otp, newPassword } = req.body;
+    if (!phone || !otp || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter all fields",
+      });
+    }
+    try{
+      const user = await userModel.findOne({phone: phone});
+  
+      //Verify OTP
+      if(user.resetPasswordOTP != otp){
+        return res.status(400).json({
+          success: false,
+          message: "Invalid OTP"
+        })
+      }
+  
+      //Check if OTP is expired
+      if(user.resetPasswordExpires < Date.now()){
+        return res.status(400).json({
+          success: false,
+          message: "OTP expired"
+        })
+      }
+  
+      //Hash the password
+      const randomSalt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, randomSalt);
+  
+      //update to database
+      user.password = hashedPassword;
+      await user.save();
+  
+      //Send response
+      res.status(200).json({
+        success: true,
+        message: "Password reset successfully"
+      })
+  
+    }catch(error){
+      console.log(error);
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error",
+      })
+    }
+    }  
+
 
 
 
@@ -220,5 +328,8 @@ module.exports = {
     createUser,
     loginUser,
     getCurrentUser,
-    getToken
+    getToken,
+    forgotPassword,
+    verifyOtpAndResetPassword
+
 }

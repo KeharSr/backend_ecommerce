@@ -51,9 +51,6 @@ const placeOrder = async (req, res) => {
 
 
 // Admin: Get All Orders
-
-
-
 const getAllOrders = async (req, res) => {
     try {
         const orders = await orderModel.find({}).populate("products.productId");
