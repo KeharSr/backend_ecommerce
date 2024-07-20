@@ -12,11 +12,13 @@ const orderSchema = new mongoose.Schema({
             ref: 'product',  // Make sure this matches your Product model name
             required: true
         },
+        
         quantity: {
             type: Number,
             required: true,
             min: 1  // Ensure there's at least one product
         }
+        
     }],
     totalPrice: {
         type: Number,

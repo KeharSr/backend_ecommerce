@@ -49,34 +49,66 @@ const placeOrder = async (req, res) => {
     }
 }
 
-// verify order
-const verifyOrder = async (req, res) => {
-    const{orderId,success} = req.body;
-    try{
-        const order = await orderModel.findById(orderId);
-        if(!order){
-            return res.status(404).json({success:false,message: "Order not found"});
+
+// Admin: Get All Orders
+
+
+
+const getAllOrders = async (req, res) => {
+    try {
+        const orders = await orderModel.find({}).populate("products.productId");
+
+        // Check if the orders array is empty
+        if (orders.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No orders found',
+            });
         }
-        if(success==="true"){
-            await orderModel.findByIdAndUpdate(orderId, {payment: true});
-            res.status(200).json({success:true,message: "Payment verified successfully"});
-        }else{
-            await orderModel.findByIdAndDelete(orderId);
-            res.status(200).json({success:false,message: "Order deleted successfully"})
-        }      
-       
-    }catch(error){
-        console.error('Failed to verify order:', error);
+
+        // If orders are found, return them
+        res.status(200).json({
+            success: true,
+            message: 'Orders fetched successfully!',
+            orders: orders
+        });
+    } catch (error) {
+        console.log(error);
         res.status(500).json({
-            success:false,
+            success: false,
+            message: 'Internal Server Error!',
+            error: error,
+        });
+    }
+}
+
+// update order status
+const updateOrderStatus = async (req, res) => {
+    const { orderId } = req.body;
+    const { status } = req.body;
+
+    try{
+        await orderModel.findByIdAndUpdate(orderId, { status });
+        res.status(200).json({
+            success: true,
+            message: "Order status updated successfully"
+        });
+    }
+    catch(error){
+        console.log( error);
+        res.status(500).json({
+            success: false,
             message: "Internal server error"
         });
     }
 }
 
+
 module.exports = {
     placeOrder,
-    verifyOrder
+    getAllOrders,
+    updateOrderStatus
+    
 };
 
 
