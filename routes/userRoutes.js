@@ -13,6 +13,12 @@ router.get('/current', userController.getCurrentUser)
 
 router.post('/token', userController.getToken)
 
+// forgot password
+router.post('/forgot_password', userController.forgotPassword);
+
+// verify otp and reset password
+router.post('/verify_otp', userController.verifyOtpAndResetPassword);
+
 
 
 

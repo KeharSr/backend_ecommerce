@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Cart Schema Definition
+
 const cartSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,

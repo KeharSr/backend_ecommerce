@@ -48,6 +48,10 @@ app.use('/api/product', require('./routes/productRoutes'))
 
 app.use('/api/cart', require('./routes/cartRoutes'))
 
+app.use('/api/order', require('./routes/orderRoutes'))
+
+
+
 
 
 
@@ -57,3 +61,6 @@ app.use('/api/cart', require('./routes/cartRoutes'))
 app.listen(PORT, ()=>{
     console.log(`Server is Running on port ${PORT} !`)
 }) 
+
+
+

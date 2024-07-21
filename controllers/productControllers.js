@@ -284,6 +284,7 @@ const getProductsByCategory = async (req, res) => {
             success: true,
             message: 'Products fetched successfully by category',
             products: products,
+            
         });
     } catch (error) {
         console.log(error);
@@ -295,51 +296,6 @@ const getProductsByCategory = async (req, res) => {
     }
 };
 
-// const getProductsByCategory = async (req, res) => {
-//     let category = req.query.category;
-//     console.log(category);
-
-//     const pageNo = parseInt(req.query.page) || 1;
-//     const limit = parseInt(req.query.limit) || 15;
-
-//     // Initialize the query object. If category is "All", we want to fetch all products.
-//     const query = (category !== 'All' && category) ? { productCategory: category } : {};
-
-//     try {
-//         const products = await productModel.find(query)
-//             .skip((pageNo - 1) * limit)
-//             .limit(limit);
-
-//         const total = await productModel.countDocuments(query);
-
-//         if (!products.length) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: 'No products found for this category',
-//             });
-//         }
-
-//         const totalPages = Math.ceil(total / limit);
-
-//         res.status(200).json({
-//             success: true,
-//             message: 'Products fetched successfully by category',
-//             products: products,
-//             pagination: {
-//                 currentPage: pageNo,
-//                 totalPages: totalPages,
-//                 totalItems: total
-//             }
-//         });
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({
-//             success: false,
-//             message: 'Internal server error',
-//             error: 'An error occurred while fetching the products'
-//         });
-//     }
-// };
 
 
 
