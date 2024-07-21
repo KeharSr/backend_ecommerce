@@ -4,6 +4,7 @@ const userModel = require('../models/userModel');
 const { checkout } = require("../routes/userRoutes");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const sendOtp = require("../service/sentOtp");
 
 
 
@@ -213,9 +214,9 @@ const getToken = async (req, res) => {
   };
 
   const forgotPassword = async (req, res) => {
-    const { phone } = req.body;
+    const { phoneNumber} = req.body;
   
-    if (!phone) {
+    if (!phoneNumber) {
       return res.status(400).json({
         success: false,
         message: "Please enter your phone number",
@@ -224,7 +225,7 @@ const getToken = async (req, res) => {
     try{
   
       // finding user by phone number
-      const user = await userModel.findOne({ phone: phone });
+      const user = await userModel.findOne({ phoneNumber: phoneNumber });
       if (!user) {
         return res.status(400).json({
           success: false,
@@ -243,7 +244,7 @@ const getToken = async (req, res) => {
       // set expiry time for OTP
   
       // send OTP to registered phone number
-      const isSent = await sendOtp(phone, otp)
+      const isSent = await sendOtp(phoneNumber, otp)
       if(isSent){
         return res.status(400).json({
           sucess : false,
@@ -271,15 +272,15 @@ const getToken = async (req, res) => {
   }
 
   const verifyOtpAndResetPassword = async (req, res) => {
-    const { phone, otp, newPassword } = req.body;
-    if (!phone || !otp || !newPassword) {
+    const { phoneNumber, otp, newPassword } = req.body;
+    if (!phoneNumber || !otp || !newPassword) {
       return res.status(400).json({
         success: false,
         message: "Please enter all fields",
       });
     }
     try{
-      const user = await userModel.findOne({phone: phone});
+      const user = await userModel.findOne({phoneNumber: phoneNumber});
   
       //Verify OTP
       if(user.resetPasswordOTP != otp){

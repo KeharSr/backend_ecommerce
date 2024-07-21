@@ -284,6 +284,7 @@ const getProductsByCategory = async (req, res) => {
             success: true,
             message: 'Products fetched successfully by category',
             products: products,
+            
         });
     } catch (error) {
         console.log(error);

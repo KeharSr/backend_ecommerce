@@ -27,6 +27,17 @@ const userSchema = new mongoose.Schema({
         unique: true,
     },
 
+    resetPasswordOTP: {
+        type: Number,
+        default: null
+    },
+
+    resetPasswordExpires: {
+        type: Date,
+        default: null
+    },
+    
+
     password : {
         type : String,
         required : true

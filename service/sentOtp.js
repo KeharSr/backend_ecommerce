@@ -1,14 +1,14 @@
 const axios = require('axios');
 
 let isSent = false;
-const sendOtp = async (phone, otp) => {
+const sendOtp = async (phoneNumber, otp) => {
     const url = 
     'https://api.managepoint.co/api/sms/send'
 
     // payload to send
     const payload = {
         apiKey: '8d6ad695-1dff-4c9e-9eb4-b6ba8f4465ee',
-        to : phone,
+        to : phoneNumber,
         message: `Your OTP is ${otp}`
     }
 

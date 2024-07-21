@@ -1,6 +1,3 @@
-
- 
-
 const axios = require("axios");
 
 // Function to verify Khalti Payment

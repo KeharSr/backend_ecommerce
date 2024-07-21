@@ -12,7 +12,7 @@ router.post('/place_order', authGuard, orderController.placeOrder);
 router.get('/get_all_orders', adminGuard, orderController.getAllOrders);
 
 // Route to update order status
-router.post('/update_order_status', adminGuard, orderController.updateOrderStatus);
+router.post('/update_order_status/:orderId', adminGuard, orderController.updateOrderStatus);
 
 
 module.exports = router;
