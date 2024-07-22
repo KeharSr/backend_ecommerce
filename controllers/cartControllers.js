@@ -53,30 +53,7 @@ const addToCart = async (req, res) => {
 
 // remove items from user cart
 const removeFromCart = async (req, res) => {
-    const { productId } = req.params;
-    const { userId } = req.user;
-
-    try {
-        const user = await userModel.findById(userId);
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'User not found!'
-            });
-        }
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            success: false,
-            message: 'Internal Server Error!'
-        });
-    }
-
-}
-
-
-// fetch user cart data
-const getCart = async (req, res) => {
+    const { productId } = req.body;
     const id = req.user.id;
 
     try {
@@ -88,12 +65,82 @@ const getCart = async (req, res) => {
             });
         }
 
-        const cartItems = await cartModel.find({ userId: id }).populate('productId');
+        const existingProduct = await cartModel.findOne({ productId: productId, userId: id });
+        if (!existingProduct) {
+            return res.json({
+                success: false,
+                message: 'Product not found in cart!'
+            });
+        }
+
+        await cartModel.deleteOne({ productId: productId, userId: id });
+
+        res.status(200).json({
+            success: true,
+            message: 'Product removed from cart successfully!'
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal Server Error!'
+        });
+    }
+}
+
+
+// fetch user cart data
+const getActiveCart = async (req, res) => {
+    const id = req.user.id;
+
+    try {
+        const user = await userModel.findById(id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found!'
+            });
+        }
+
+        const cartItems = await cartModel.find({ userId: id, 
+            status: 'active'
+        }).populate('productId');
         console.log(cartItems);
 
         res.status(200).json({
             success: true,
-            products: cartItems
+            products: cartItems,
+            message: 'Cart items fetched successfully!'
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal Server Error!'
+        });
+    }
+}
+
+const updateStatus = async (req, res) => {
+    const status="inactive";
+    const id = req.user.id;
+
+    try {
+        const user = await userModel.findById(id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found!'
+            });
+        }
+
+        await cartModel.updateMany({ userId: id }, { status: status });
+
+        res.status(200).json({
+            success: true,
+            message: 'Cart status updated successfully!'
         });
 
     } catch (error) {
@@ -109,6 +156,7 @@ const getCart = async (req, res) => {
 module.exports = {
     addToCart,
     removeFromCart,
-    getCart,
+    getActiveCart,
+    updateStatus,
     
 }

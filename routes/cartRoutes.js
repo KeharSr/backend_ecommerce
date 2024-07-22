@@ -12,6 +12,9 @@ router.post('/add_to_cart',authGuard,cartController.addToCart);
 router.delete('/remove_from_cart/:id', authGuard, cartController.removeFromCart);
 
 // Get the cart
-router.get('/get_cart', authGuard, cartController.getCart);
+router.get('/get_cart', authGuard, cartController.getActiveCart);
+
+// Update the status
+router.put('/update_status', authGuard, cartController.updateStatus);
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const orderModel = require('../models/orderModel');
-const userModel = require('../models/userModel'); // Ensure this line is correctly importing the User model
+const userModel = require('../models/userModel'); 
+const cartModel = require('../models/cartModel');
 
 // Placing user order from cart
 const placeOrder = async (req, res) => {
@@ -33,9 +34,9 @@ const placeOrder = async (req, res) => {
         // Check payment status
         if (payment) {
             // If payment is done, empty the user's cart
-            await userModel.updateOne({ _id: userId }, { $set: { cart: [] } });
+            await cartModel.updateOne({ _id: userId }, { $set: { product: [] } });
         }
-
+       
         // Return success response
         res.status(201).json({
             message: "Order placed successfully",
