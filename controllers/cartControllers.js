@@ -20,7 +20,7 @@ const addToCart = async (req, res) => {
                 message: 'User not found!'
             });
         }
-        const existingProduct = await cartModel.findOne({ productId: productId, userId: id });
+        const existingProduct = await cartModel.findOne({ productId: productId, userId: id,status:'active' });
         if (existingProduct) {
             return res.json({
                 success: false,
@@ -53,19 +53,14 @@ const addToCart = async (req, res) => {
 
 // remove items from user cart
 const removeFromCart = async (req, res) => {
-    const { productId } = req.body;
-    const id = req.user.id;
+    console.log(req.params);
+    const  id  = req.params.id;
+    
 
     try {
-        const user = await userModel.findById(id);
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'User not found!'
-            });
-        }
+        
 
-        const existingProduct = await cartModel.findOne({ productId: productId, userId: id });
+        const existingProduct = await cartModel.findById(id);
         if (!existingProduct) {
             return res.json({
                 success: false,
@@ -73,7 +68,7 @@ const removeFromCart = async (req, res) => {
             });
         }
 
-        await cartModel.deleteOne({ productId: productId, userId: id });
+        await cartModel.findByIdAndDelete(id);
 
         res.status(200).json({
             success: true,
@@ -88,6 +83,8 @@ const removeFromCart = async (req, res) => {
         });
     }
 }
+
+
 
 
 // fetch user cart data
@@ -158,5 +155,6 @@ module.exports = {
     removeFromCart,
     getActiveCart,
     updateStatus,
+    
     
 }
