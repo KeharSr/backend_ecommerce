@@ -1,4 +1,3 @@
-
 const path = require('path');
 const userModel = require('../models/userModel');
 const productModel = require('../models/productModel');
@@ -149,12 +148,51 @@ const updateStatus = async (req, res) => {
     }
 }
 
+// update the quantity of the product in the cart
+const updateQuantity = async (req, res) => {
+    const { productId, quantity } = req.body;
+    const id = req.user.id;
+
+    try {
+        const user = await userModel.findById(id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found!'
+            });
+        }
+
+        const existingProduct = await cartModel.findOne({ productId: productId, userId: id, status: 'active' });
+        if (!existingProduct) {
+            return res.json({
+                success: false,
+                message: 'Product not found in cart!'
+            });
+        }
+
+        await cartModel.updateOne({ productId: productId, userId: id, status: 'active' }, { quantity: quantity });
+
+        res.status(200).json({
+            success: true,
+            message: 'Cart updated successfully!'
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal Server Error!'
+        });
+    }
+}
+
 
 module.exports = {
     addToCart,
     removeFromCart,
     getActiveCart,
     updateStatus,
+    updateQuantity
     
     
 }
