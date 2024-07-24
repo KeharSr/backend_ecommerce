@@ -3,6 +3,7 @@
 
 const Review = require('../models/review&ratingModel');
 const Product = require('../models/productModel');
+const { default: mongoose } = require('mongoose');
 
 const createReview = async (req, res) => {
     const { rating, review, productId } = req.body;
@@ -47,12 +48,14 @@ const createReview = async (req, res) => {
 // get product ratings and reviews by user and product
 const getReviewByUserAndProduct = async (req, res) => {
     const productId = req.params.id;
-    const userId = req.user.id;
+    const userId = req.user.id;  
+
+    console.log('Fetching review for UserID:', userId, 'ProductID:', productId);
 
     try {
         const review = await Review.findOne({ product: productId, user: userId });
 
-        if (review.length===0) {
+        if (!review) {
             return res.status(404).json({
                 success: false,
                 message: 'No review found for this product'
@@ -62,12 +65,14 @@ const getReviewByUserAndProduct = async (req, res) => {
         res.status(200).json({
             success: true,
             message: 'Review fetched successfully',
-            review: review
+            review
         });
     } catch (error) {
+        console.error('Error fetching review:', error);
         res.status(500).json({ success: false, message: "Error fetching review", error: error.message });
     }
 };
+
 
 //Get all reviews for a product
 const getReviewsByProduct = async (req, res) => {
@@ -107,9 +112,58 @@ const updateProductRatings = async (productId) => {
     });
 };
 
+// get the average rating of a product
+const getAverageRating = async (req, res) => {
+    const productId = req.params.id; 
+    console.log("Fetching average rating for product:", productId);  
+
+    try {
+       // Aggregate the average rating for the product and display all products
+        const aggregation = await Review.aggregate([
+            {
+                $match: { product:new mongoose.Types.ObjectId(productId) }
+            },
+            {
+                $group: {
+                    _id: null,
+                    averageRating: { $avg: "$rating" },
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        if (aggregation.length === 0) {
+            return res.status(200).json({
+
+                success: true,
+                message: 'No reviews found for this product',
+                averageRating: 0,
+                count: 0,
+                productId
+            });
+        }
+
+        const { averageRating, count } = aggregation[0];
+
+        res.status(200).json({
+            success: true,
+            message: 'Average rating fetched successfully',
+            averageRating,
+            count,
+            productId  // Optional, if you want to return the count of reviews as well
+        });
+    } catch (error) {
+        console.error('Error fetching average rating:', error);
+        res.status(500).json({ success: false, message: "Error fetching average rating", error: error.message });
+    }
+};
+
+
+
 
 module.exports = { 
     createReview, 
     getReviewsByProduct,
-    getReviewByUserAndProduct
+    getReviewByUserAndProduct,
+    getAverageRating
 };
