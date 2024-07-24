@@ -32,8 +32,7 @@ const createReview = async (req, res) => {
             user: id
         });
 
-        // Update product ratings after adding new review
-        await updateProductRatings(productId);
+        
 
         res.status(201).json({
             success: true,
@@ -101,16 +100,7 @@ const getReviewsByProduct = async (req, res) => {
 
 
 
-const updateProductRatings = async (productId) => {
-    const reviews = await Review.find({ product: productId });
-    const numRatings = reviews.length;
-    const ratingsAverage = reviews.reduce((acc, cur) => acc + cur.rating, 0) / numRatings;
 
-    await Product.findByIdAndUpdate(productId, {
-        ratingsAverage,
-        ratingsQuantity: numRatings
-    });
-};
 
 // get the average rating of a product
 const getAverageRating = async (req, res) => {
@@ -159,11 +149,49 @@ const getAverageRating = async (req, res) => {
 };
 
 
+const updateReviewByUserAndProduct = async (req, res) => {
+    const { rating, review: updatedReview } = req.body;
+    const productId = req.params.productId;
+    const userId = req.user.id; 
+
+    try {
+        
+        const review = await Review.findOneAndUpdate({ product: productId, user: userId,new:true });
+        if (!review) {
+            return res.status(404).json({
+                success: false,
+                message: "No review found that can be updated by this user for this product."
+            });
+        }
+
+        
+        review.rating = rating;
+        review.review = updatedReview;
+        await review.save();
+
+       
+
+        res.status(200).json({
+            success: true,
+            message: "Review updated successfully",
+            review
+        });
+    } catch (error) {
+        console.error('Error updating review:', error);
+        res.status(500).json({ success: false, message: "Error updating review", error: error.message });
+    }
+};
+
+
+
+
 
 
 module.exports = { 
     createReview, 
     getReviewsByProduct,
     getReviewByUserAndProduct,
-    getAverageRating
+    getAverageRating,
+    updateReviewByUserAndProduct, 
+    
 };

@@ -12,7 +12,10 @@ router.get('/get_reviews/:id',authGuard, reviewandratingController.getReviewsByP
 //get reviews by user and product
 router.get('/get_reviews_by_user_and_product/:id', authGuard, reviewandratingController.getReviewByUserAndProduct);
 
-//get avverage rating
+//get average rating
 router.get('/get_average_rating/:id', reviewandratingController.getAverageRating);
+
+//update reviews
+router.put('/update_reviews/:id', authGuard, reviewandratingController.updateReviewByUserAndProduct);
 
 module.exports = router;

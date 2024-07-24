@@ -36,7 +36,7 @@ const createUser = async (req, res) => {
 
         
         if (existingUser) {
-            return res.status(400).json({
+            return res.json({
                 sucess: false,
                 message: 'User Already Exist!'
             })
