@@ -6,13 +6,15 @@ const Product = require('../models/productModel');
 
 const createReview = async (req, res) => {
     const { rating, review, productId } = req.body;
-    const userId = req.user.id; // Assuming user is authenticated and user ID is attached to req.user
+    const id = req.user.id; 
+    console.log(id);
 
     try {
         // Check if the user has already posted a review for this product
         const existingReview = await Review.findOne({
-            user: userId,
-            product: productId
+            
+            product: productId,
+            user: id
         });
 
         if (existingReview) {
@@ -23,10 +25,10 @@ const createReview = async (req, res) => {
         }
 
         const newReview = await Review.create({
-            rating,
-            review,
+            rating: rating,
+            review: review,
             product: productId,
-            user: userId
+            user: id
         });
 
         // Update product ratings after adding new review
@@ -42,6 +44,58 @@ const createReview = async (req, res) => {
     }
 };
 
+// get product ratings and reviews by user and product
+const getReviewByUserAndProduct = async (req, res) => {
+    const productId = req.params.id;
+    const userId = req.user.id;
+
+    try {
+        const review = await Review.findOne({ product: productId, user: userId });
+
+        if (review.length===0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No review found for this product'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Review fetched successfully',
+            review: review
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching review", error: error.message });
+    }
+};
+
+//Get all reviews for a product
+const getReviewsByProduct = async (req, res) => {
+    const productId = req.params.id;
+
+    try {
+        const reviews = await Review.find({ product: productId })
+
+        if (reviews.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No reviews found for this product'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Reviews fetched successfully',
+            reviews: reviews
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching reviews", error: error.message });
+    }
+};
+
+
+
+
 const updateProductRatings = async (productId) => {
     const reviews = await Review.find({ product: productId });
     const numRatings = reviews.length;
@@ -53,22 +107,9 @@ const updateProductRatings = async (productId) => {
     });
 };
 
-const getReviewsByProduct = async (req, res) => {
-    try {
-        const reviews = await Review.find({ product: req.params.productId }).populate('user', 'name');
-        res.json(reviews);
-    } catch (error) {
-        res.status(500).send(error.message);
-    }
-};
 
-const getReviewsForAdmin = async (req, res) => {
-    try {
-        const reviews = await Review.find().populate('product').populate('user', 'name');
-        res.json(reviews);
-    } catch (error) {
-        res.status(500).send(error.message);
-    }
+module.exports = { 
+    createReview, 
+    getReviewsByProduct,
+    getReviewByUserAndProduct
 };
-
-module.exports = { createReview, getReviewsByProduct, getReviewsForAdmin };

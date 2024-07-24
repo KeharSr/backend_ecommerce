@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const reviewSchema = new mongoose.Schema({
     product: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
+        ref: 'product',
         required: true
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'user',
         required: true
     },
     rating: {
@@ -27,5 +27,5 @@ const reviewSchema = new mongoose.Schema({
     }
 });
 
-const Review = mongoose.model('review', reviewSchema);
+const Review = mongoose.model('reviews', reviewSchema);
 module.exports = Review;
