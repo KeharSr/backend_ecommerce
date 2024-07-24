@@ -5,6 +5,8 @@ const { checkout } = require("../routes/userRoutes");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const sendOtp = require("../service/sentOtp");
+const path = require('path');
+const User = require("../models/userModel");
 
 
 
@@ -319,7 +321,60 @@ const getToken = async (req, res) => {
         message: "Internal server error",
       })
     }
-    }  
+  }  
+
+  
+
+    
+
+
+  
+    const uploadProfilePicture = async (req, res) => {
+      if (!req.files || !req.files.profilePicture) {
+          return res.status(400).json({
+              success: false,
+              message: 'No file uploaded'
+          });
+      }
+  
+      const profilePicture = req.files.profilePicture;
+      const userId = req.body.userId;
+  
+      // Generate a unique name for the image
+      const profileImage = `${Date.now()}_${profilePicture.name}`;
+      const uploadPath = path.join(__dirname, `../public/profile_pictures/${profileImage}`);
+  
+      try {
+          // Move the file to the upload directory
+          await profilePicture.mv(uploadPath);
+  
+          // Find the user and update the profile picture path
+          const user = await User.findById(userId);
+          if (!user) {
+              return res.status(404).json({
+                  success: false,
+                  message: 'User not found'
+              });
+          }
+  
+          user.profilePicture = profileImage; // Store the image name in the database
+          await user.save();
+  
+          res.status(200).json({
+              success: true,
+              message: 'Profile picture uploaded successfully',
+              user
+          });
+      } catch (error) {
+          console.error('Error uploading file:', error);
+          res.status(500).json({
+              success: false,
+              message: 'Error uploading file',
+              error: error.message
+          });
+      }
+  };
+  
 
 
 
@@ -331,6 +386,7 @@ module.exports = {
     getCurrentUser,
     getToken,
     forgotPassword,
-    verifyOtpAndResetPassword
+    verifyOtpAndResetPassword,
+    uploadProfilePicture
 
 }

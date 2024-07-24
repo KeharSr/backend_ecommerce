@@ -19,6 +19,11 @@ router.post('/forgot_password', userController.forgotPassword);
 // verify otp and reset password
 router.post('/verify_otp', userController.verifyOtpAndResetPassword);
 
+// upload profile picture
+router.post('/profile_picture',userController.uploadProfilePicture);
+
+
+
 
 
 
