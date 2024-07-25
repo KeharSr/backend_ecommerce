@@ -52,6 +52,8 @@ app.use('/api/order', require('./routes/orderRoutes'))
 
 app.use('/api/review', require('./routes/review&ratingRoutes'))
 
+app.use('/api/favorite', require('./routes/favouritesRoutes'))
+
 
 
 
