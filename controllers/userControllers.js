@@ -322,13 +322,6 @@ const getToken = async (req, res) => {
       })
     }
   }  
-
-  
-
-    
-
-
-  
     const uploadProfilePicture = async (req, res) => {
       if (!req.files || !req.files.profilePicture) {
           return res.status(400).json({
