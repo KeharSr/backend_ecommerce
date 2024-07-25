@@ -1,11 +1,11 @@
-const Favorite = require('../models/favouritesModel');
+const favouritesModel = require('../models/favouritesModel');
 
 const addFavorite = async (req, res) => {
     const userId = req.user.id;
     const { productId } = req.body;
 
     try {
-        const favorite = await Favorite.findOne({ user: userId, product: productId });
+        const favorite = await favouritesModel.findOne({ user: userId, product: productId });
 
         if (favorite) {
             return res.status(400).json({
@@ -14,7 +14,7 @@ const addFavorite = async (req, res) => {
             });
         }
 
-        const newFavorite = new Favorite({ user: userId, product: productId });
+        const newFavorite = new favouritesModel({ user: userId, product: productId });
         await newFavorite.save();
 
         res.status(201).json({
@@ -36,12 +36,12 @@ const removeFavorite = async (req, res) => {
     const { productId } = req.body;
 
     try {
-        const favorite = await Favorite.findOneAndDelete({ user: userId, product: productId });
+        const favorite = await favouritesModel.findOneAndDelete({ user: userId, product: productId });
 
         if (!favorite) {
             return res.status(404).json({
                 success: false,
-                message: 'Product not found in favorites'
+                message: 'Favorite not found'
             });
         }
 
@@ -62,11 +62,12 @@ const getFavorites = async (req, res) => {
     const userId = req.user.id;
 
     try {
-        const favorites = await Favorite.find({ user: userId }).populate('product');
+        const favorites = await favouritesModel.find({ user: userId }).populate('product');
 
         res.status(200).json({
             success: true,
-            favorites: favorites.map(fav => fav.product)
+            message: 'Favorites fetched successfully',
+            favorites
         });
     } catch (error) {
         res.status(500).json({

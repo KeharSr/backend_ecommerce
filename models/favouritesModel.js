@@ -11,7 +11,7 @@ const favoriteSchema = new mongoose.Schema({
         ref: 'product',
         required: true
     }
-}, { timestamps: true });
+}); 
 
 const Favorite = mongoose.model('Favorite', favoriteSchema);
 
