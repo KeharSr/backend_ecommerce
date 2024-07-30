@@ -322,51 +322,141 @@ const getToken = async (req, res) => {
       })
     }
   }  
-    const uploadProfilePicture = async (req, res) => {
+  //   const uploadProfilePicture = async (req, res) => {
+  //     if (!req.files || !req.files.profilePicture) {
+  //         return res.status(400).json({
+  //             success: false,
+  //             message: 'No file uploaded'
+  //         });
+  //     }
+  
+  //     const profilePicture = req.files.profilePicture;
+  //     const userId = req.body.userId;
+  
+  //     // Generate a unique name for the image
+  //     const profileImage = `${Date.now()}_${profilePicture.name}`;
+  //     const uploadPath = path.join(__dirname, `../public/profile_pictures/${profileImage}`);
+  
+  //     try {
+  //         // Move the file to the upload directory
+  //         await profilePicture.mv(uploadPath);
+  
+  //         // Find the user and update the profile picture path
+  //         const user = await User.findById(userId);
+  //         if (!user) {
+  //             return res.status(404).json({
+  //                 success: false,
+  //                 message: 'User not found'
+  //             });
+  //         }
+  
+  //         user.profilePicture = profileImage; // Store the image name in the database
+  //         await user.save();
+  
+  //         res.status(200).json({
+  //             success: true,
+  //             message: 'Profile picture uploaded successfully',
+  //             user
+  //         });
+  //     } catch (error) {
+  //         console.error('Error uploading file:', error);
+  //         res.status(500).json({
+  //             success: false,
+  //             message: 'Error uploading file',
+  //             error: error.message
+  //         });
+  //     }
+  // };
+
+  const uploadProfilePicture = async (req, res) => {
+    try {
+      const token = req.headers['authorization'].split(' ')[1];
+      if (!token) {
+        return res.status(401).json({
+          success: false,
+          message: 'No token provided',
+        });
+      }
+  
+      const decoded = jwt.verify(token, process.env.JWT_SECRET); // Replace 'your_secret_key' with your actual secret key
+      const userId = decoded.id;
+  
       if (!req.files || !req.files.profilePicture) {
-          return res.status(400).json({
-              success: false,
-              message: 'No file uploaded'
-          });
+        return res.status(400).json({
+          success: false,
+          message: 'No file uploaded',
+        });
       }
   
       const profilePicture = req.files.profilePicture;
-      const userId = req.body.userId;
-  
-      // Generate a unique name for the image
       const profileImage = `${Date.now()}_${profilePicture.name}`;
       const uploadPath = path.join(__dirname, `../public/profile_pictures/${profileImage}`);
   
-      try {
-          // Move the file to the upload directory
-          await profilePicture.mv(uploadPath);
+      await profilePicture.mv(uploadPath);
   
-          // Find the user and update the profile picture path
-          const user = await User.findById(userId);
-          if (!user) {
-              return res.status(404).json({
-                  success: false,
-                  message: 'User not found'
-              });
-          }
-  
-          user.profilePicture = profileImage; // Store the image name in the database
-          await user.save();
-  
-          res.status(200).json({
-              success: true,
-              message: 'Profile picture uploaded successfully',
-              user
-          });
-      } catch (error) {
-          console.error('Error uploading file:', error);
-          res.status(500).json({
-              success: false,
-              message: 'Error uploading file',
-              error: error.message
-          });
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found',
+        });
       }
-  };
+  
+      user.profilePicture = profileImage;
+      await user.save();
+  
+      res.status(200).json({
+        success: true,
+        message: 'Profile picture uploaded successfully',
+        data: user,
+      });
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error uploading file',
+        error: error.message,
+      });
+    }
+  }
+  // edit user profile
+const editUserProfile = async (req, res) => {
+    const { firstName, lastName, userName,email, phoneNumber } = req.body;
+    const userId = req.body.userId;
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        user.firstName = firstName;
+        user.lastName = lastName;
+        user.email = email;
+        user.phoneNumber = phoneNumber;
+        user.userName = userName;
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'User profile updated successfully',
+            user
+        });
+
+    } catch (error) {
+        console.error('Error updating user profile:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error updating user profile',
+            error: error.message
+        });
+    }
+}
+  
   
 
 
@@ -380,6 +470,7 @@ module.exports = {
     getToken,
     forgotPassword,
     verifyOtpAndResetPassword,
-    uploadProfilePicture
+    uploadProfilePicture,
+    editUserProfile
 
 }

@@ -32,6 +32,7 @@ const productSchema = new mongoose.Schema({
         type: Number,  
     },
     
+    
 
 })
 

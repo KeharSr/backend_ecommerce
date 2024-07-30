@@ -20,4 +20,7 @@ router.get('/get_cart', authGuard, cartController.getActiveCart);
 // Update the status
 router.put('/update_status', authGuard, cartController.updateStatus);
 
+// Update the cart
+router.put('/update_cart',authGuard,cartController.updateQuantity);
+
 module.exports = router;

@@ -20,7 +20,10 @@ router.post('/forgot_password', userController.forgotPassword);
 router.post('/verify_otp', userController.verifyOtpAndResetPassword);
 
 // upload profile picture
-router.post('/profile_picture',userController.uploadProfilePicture);
+router.post('/profile_picture/:id',userController.uploadProfilePicture);
+
+// update user details
+router.put('/update', userController.editUserProfile);
 
 
 

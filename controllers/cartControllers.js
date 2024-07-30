@@ -174,7 +174,8 @@ const updateQuantity = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'Cart updated successfully!'
+            message: 'Cart updated successfully!',
+            
         });
 
     } catch (error) {
