@@ -80,6 +80,36 @@ const getAllOrders = async (req, res) => {
     }
 }
 
+// get  orders by the user
+const getOrdersByUser = async (req, res) => {
+    const userId = req.user.id;
+    try {
+        const orders = await orderModel.find({ userId }).populate("products.productId");
+
+        // Check if the orders array is empty
+        if (orders.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No orders found',
+            });
+        }
+
+        // If orders are found, return them
+        res.status(200).json({
+            success: true,
+            message: 'Orders fetched successfully!',
+            orders: orders
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal Server Error!',
+            error: error,
+        });
+    }
+} 
+
 // update order status
 const updateOrderStatus = async (req, res) => {
     const { orderId } = req.params;
@@ -106,7 +136,8 @@ const updateOrderStatus = async (req, res) => {
 module.exports = {
     placeOrder,
     getAllOrders,
-    updateOrderStatus
+    updateOrderStatus,
+    getOrdersByUser
     
 };
 

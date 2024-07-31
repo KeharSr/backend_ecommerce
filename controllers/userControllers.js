@@ -1,5 +1,4 @@
 const { response } = require("express");
-
 const userModel = require('../models/userModel');
 const { checkout } = require("../routes/userRoutes");
 const bcrypt = require('bcrypt');
@@ -9,29 +8,16 @@ const path = require('path');
 const User = require("../models/userModel");
 
 
-
 const createUser = async (req, res) => {
-
-    
-    console.log(req.body);
-
-    
-    const { firstName, lastName,userName, email, phoneNumber, password } = req.body;
-
-
-    
-    if (!firstName || !lastName ||!userName || !email || !phoneNumber || !password) {
-       
-        return res.status().json({
+console.log(req.body);
+const { firstName, lastName,userName, email, phoneNumber, password } = req.body;
+if (!firstName || !lastName ||!userName || !email || !phoneNumber || !password) {
+       return res.status().json({
             sucess: false,
             message: 'Plz enter all details!'
         })
 
     }
-
-
-
-   
     try {
         
         const existingUser = await userModel.findOne({ email: email })
@@ -322,52 +308,6 @@ const getToken = async (req, res) => {
       })
     }
   }  
-  //   const uploadProfilePicture = async (req, res) => {
-  //     if (!req.files || !req.files.profilePicture) {
-  //         return res.status(400).json({
-  //             success: false,
-  //             message: 'No file uploaded'
-  //         });
-  //     }
-  
-  //     const profilePicture = req.files.profilePicture;
-  //     const userId = req.body.userId;
-  
-  //     // Generate a unique name for the image
-  //     const profileImage = `${Date.now()}_${profilePicture.name}`;
-  //     const uploadPath = path.join(__dirname, `../public/profile_pictures/${profileImage}`);
-  
-  //     try {
-  //         // Move the file to the upload directory
-  //         await profilePicture.mv(uploadPath);
-  
-  //         // Find the user and update the profile picture path
-  //         const user = await User.findById(userId);
-  //         if (!user) {
-  //             return res.status(404).json({
-  //                 success: false,
-  //                 message: 'User not found'
-  //             });
-  //         }
-  
-  //         user.profilePicture = profileImage; // Store the image name in the database
-  //         await user.save();
-  
-  //         res.status(200).json({
-  //             success: true,
-  //             message: 'Profile picture uploaded successfully',
-  //             user
-  //         });
-  //     } catch (error) {
-  //         console.error('Error uploading file:', error);
-  //         res.status(500).json({
-  //             success: false,
-  //             message: 'Error uploading file',
-  //             error: error.message
-  //         });
-  //     }
-  // };
-
   const uploadProfilePicture = async (req, res) => {
     try {
       const token = req.headers['authorization'].split(' ')[1];
@@ -378,7 +318,7 @@ const getToken = async (req, res) => {
         });
       }
   
-      const decoded = jwt.verify(token, process.env.JWT_SECRET); // Replace 'your_secret_key' with your actual secret key
+      const decoded = jwt.verify(token, process.env.JWT_SECRET); 
       const userId = decoded.id;
   
       if (!req.files || !req.files.profilePicture) {
@@ -394,21 +334,10 @@ const getToken = async (req, res) => {
   
       await profilePicture.mv(uploadPath);
   
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: 'User not found',
-        });
-      }
-  
-      user.profilePicture = profileImage;
-      await user.save();
-  
       res.status(200).json({
         success: true,
         message: 'Profile picture uploaded successfully',
-        data: user,
+        data: profileImage,
       });
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -457,12 +386,6 @@ const editUserProfile = async (req, res) => {
     }
 }
   
-  
-
-
-
-
-
 module.exports = {
     createUser,
     loginUser,
