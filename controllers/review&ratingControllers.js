@@ -152,24 +152,27 @@ const getAverageRating = async (req, res) => {
 const updateReviewByUserAndProduct = async (req, res) => {
     const { rating, review: updatedReview } = req.body;
     const productId = req.params.productId;
-    const userId = req.user.id; 
+    const userId = req.user.id;
+
+    console.log('Product ID:', productId);
+    console.log('User ID:', userId);
+    console.log('Rating:', rating);
+    console.log('Review:', updatedReview);
 
     try {
-        
-        const review = await Review.findOneAndUpdate({ product: productId, user: userId,new:true });
+        // Find the review by product and user and update it
+        const review = await Review.findOneAndUpdate(
+            { product: productId, user: userId },
+            { rating, review: updatedReview },
+            { new: true }
+        );
+
         if (!review) {
             return res.status(404).json({
                 success: false,
                 message: "No review found that can be updated by this user for this product."
             });
         }
-
-        
-        review.rating = rating;
-        review.review = updatedReview;
-        await review.save();
-
-       
 
         res.status(200).json({
             success: true,
@@ -181,9 +184,6 @@ const updateReviewByUserAndProduct = async (req, res) => {
         res.status(500).json({ success: false, message: "Error updating review", error: error.message });
     }
 };
-
-
-
 
 
 

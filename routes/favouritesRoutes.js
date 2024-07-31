@@ -4,7 +4,7 @@ const { authGuard } = require('../middleware/authGuard');
 
 
 router.post('/add_favourite', authGuard, favoritesController.addFavorite);
-router.post('/remove_favourite', authGuard, favoritesController.removeFavorite);
+router.delete('/remove_favourite/:id', authGuard, favoritesController.removeFavorite);
 router.get('/get_favourite', authGuard, favoritesController.getFavorites);
 
 module.exports = router;

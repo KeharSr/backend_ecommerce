@@ -31,12 +31,14 @@ const addFavorite = async (req, res) => {
     }
 };
 
+
+
+// remove favourite with find by id and delete
 const removeFavorite = async (req, res) => {
-    const userId = req.user.id;
-    const { productId } = req.body;
+    const  id  = req.params.id;
 
     try {
-        const favorite = await favouritesModel.findOneAndDelete({ user: userId, product: productId });
+        const favorite = await favouritesModel.findByIdAndDelete(id);
 
         if (!favorite) {
             return res.status(404).json({
@@ -57,6 +59,7 @@ const removeFavorite = async (req, res) => {
         });
     }
 };
+
 
 const getFavorites = async (req, res) => {
     const userId = req.user.id;

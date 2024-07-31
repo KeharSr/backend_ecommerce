@@ -16,6 +16,6 @@ router.get('/get_reviews_by_user_and_product/:id', authGuard, reviewandratingCon
 router.get('/get_average_rating/:id', reviewandratingController.getAverageRating);
 
 //update reviews
-router.put('/update_reviews/:id', authGuard, reviewandratingController.updateReviewByUserAndProduct);
+router.put('/update_reviews/:productId', authGuard, reviewandratingController.updateReviewByUserAndProduct);
 
 module.exports = router;

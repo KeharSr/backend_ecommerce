@@ -138,7 +138,6 @@ module.exports = {
     getAllOrders,
     updateOrderStatus,
     getOrdersByUser
-    
 };
 
 

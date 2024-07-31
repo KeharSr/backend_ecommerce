@@ -76,10 +76,6 @@ const deleteProduct = async (req, res) => {
             message: "Internal server error",
             error: error
         })
-    
-    
-
-
 
 
 
