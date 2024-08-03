@@ -36,8 +36,6 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
-    
-
     password : {
         type : String,
         required : true

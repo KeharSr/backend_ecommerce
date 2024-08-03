@@ -6,137 +6,117 @@ const jwt = require('jsonwebtoken');
 const sendOtp = require("../service/sentOtp");
 const path = require('path');
 const User = require("../models/userModel");
-
+const fs = require('fs');
 
 const createUser = async (req, res) => {
-console.log(req.body);
-const { firstName, lastName,userName, email, phoneNumber, password } = req.body;
-if (!firstName || !lastName ||!userName || !email || !phoneNumber || !password) {
-       return res.status().json({
-            sucess: false,
-            message: 'Plz enter all details!'
-        })
+  console.log(req.body);
+  const { firstName, lastName, userName, email, phoneNumber, password } = req.body;
+  
+  if (!firstName || !lastName || !userName || !email || !phoneNumber || !password) {
+      return res.status(400).json({
+          success: false,
+          message: 'Please enter all details!'
+      });
+  }
 
-    }
-    try {
-        
-        const existingUser = await userModel.findOne({ email: email })
+  try {
+      const existingUserByEmail = await userModel.findOne({ email: email });
+      const existingUserByPhone = await userModel.findOne({ phoneNumber: phoneNumber });
 
-        
-        if (existingUser) {
-            return res.json({
-                sucess: false,
-                message: 'User Already Exist!'
-            })
-        }
-       
-        const randomSalt = await bcrypt.genSalt(10)
-        const hasedPassword = await bcrypt.hash(password, randomSalt)
+      if (existingUserByEmail) {
+          return res.status(400).json({
+              success: false,
+              message: 'User with this email already exists!'
+          });
+      }
 
+      if (existingUserByPhone) {
+          return res.status(400).json({
+              success: false,
+              message: 'User with this phone number already exists!'
+          });
+      }
 
-        
-        const newUser = new userModel({
-            
-            firstName: firstName,
-            lastName: lastName,
-            userName: userName,
-            email: email,
-            phoneNumber:phoneNumber,
-            password: hasedPassword
-        })
+      const randomSalt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, randomSalt);
 
-        
-        await newUser.save()
+      const newUser = new userModel({
+          firstName: firstName,
+          lastName: lastName,
+          userName: userName,
+          email: email,
+          phoneNumber: phoneNumber,
+          password: hashedPassword
+      });
 
-        
-        res.json({
-            sucess: true,
-            message: 'User Created Sucesfully'
-        })
+      await newUser.save();
 
+      res.status(201).json({
+          success: true,
+          message: 'User created successfully'
+      });
 
-        
-
-
-    } catch (error) {
-        console.log(error)
-        res.json({
-            sucess: false,
-            message: 'Internal Server Error!'
-        })
-
-    }
-
-
-
-
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({
+          success: false,
+          message: 'Internal Server Error!'
+      });
+  }
 }
 
-
-
 const loginUser = async (req, res) => {
-   
+  console.log(req.body);
 
-    console.log(req.body)
-    
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-   
-    if (!email  || !password ) {
-        return res.json({
-            sucess: false,
-            message: 'Please enter all the fields'
-        })
-    }
+  if (!email || !password) {
+      return res.status(400).json({
+          success: false,
+          message: 'Please enter all the fields'
+      });
+  }
 
+  try {
+      const user = await userModel.findOne({ email: email });
 
-    try {
-        
-        const user = await userModel.findOne({ email: email });
-        
-        if(!user){
-            return res.json({
-                sucess: false,
-                message: 'Email Doesnt Exist !'
-            })
+      if (!user) {
+          return res.status(400).json({
+              success: false,
+              message: "Email Doesn't Exist !"
+          });
+      }
 
-        }
-       
-        const isValidPassword = await bcrypt.compare(password,user.password)
-        
+      const isValidPassword = await bcrypt.compare(password, user.password);
 
-        if (!isValidPassword){
-            return res.json({
-                sucess: false,
-                message: 'Password Doesnt Matched !'
-            })
+      if (!isValidPassword) {
+          return res.status(400).json({
+              success: false,
+              message: "Password Doesn't Match !"
+          });
+      }
 
-        }
-        
-        const token = await jwt.sign(
-            {
-                id : user._id, isAdmin : user.isAdmin},
-                process.env.JWT_SECRET
+      const token = await jwt.sign(
+          {
+              id: user._id, isAdmin: user.isAdmin
+          },
+          process.env.JWT_SECRET
+      );
 
-        )
+      return res.status(200).json({
+          success: true,
+          message: 'User Logged in Successfully!',
+          token: token,
+          userData: user
+      });
 
-        
-        res.json({
-            sucess: true,
-            message: 'User Logined Sucessfully !',
-            token : token,
-            userData : user
-        })
-        
-
-
-    } catch (error) {
-        console.log(error)
-        return res.json({
-            sucess: false,
-            message: 'Internal Server Error'
-        })
-    }
+  } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+          success: false,
+          message: 'Internal Server Error'
+      });
+  }
 }
 
 const getCurrentUser = async (req, res) => {
@@ -307,51 +287,84 @@ const getToken = async (req, res) => {
         message: "Internal server error",
       })
     }
-  }  
-  const uploadProfilePicture = async (req, res) => {
+  } 
+
+
+
+const uploadProfilePicture = async (req, res) => {
     try {
-      const token = req.headers['authorization'].split(' ')[1];
-      if (!token) {
-        return res.status(401).json({
-          success: false,
-          message: 'No token provided',
+        const token = req.headers['authorization'].split(' ')[1];
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: 'No token provided',
+            });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+
+        if (!req.files || !req.files.profilePicture) {
+            return res.status(400).json({
+                success: false,
+                message: 'No file uploaded',
+            });
+        }
+
+        const profilePicture = req.files.profilePicture;
+        const profileImage = `${Date.now()}_${profilePicture.name}`;
+        const uploadPath = path.join(__dirname, `../public/profile_pictures/${profileImage}`);
+
+        // Find the user by ID
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found',
+            });
+        }
+
+        // Delete the existing profile picture if it exists
+        if (user.profilePicture) {
+            const existingImagePath = path.join(__dirname, `../public/profile_pictures/${user.profilePicture}`);
+            if (fs.existsSync(existingImagePath)) {
+                fs.unlinkSync(existingImagePath, (err) => {
+                    if (err) {
+                        console.error('Error deleting the old profile picture:', err);
+                    } else {
+                        console.log('Old profile picture deleted successfully');
+                    }
+                });
+            }
+        }
+
+        // Move the new profile picture to the upload path
+        await profilePicture.mv(uploadPath);
+
+        // Update user's profile picture
+        user.profilePicture = profileImage;
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Profile picture uploaded successfully',
+            data: { profilePicture: profileImage, user }
         });
-      }
-  
-      const decoded = jwt.verify(token, process.env.JWT_SECRET); 
-      const userId = decoded.id;
-  
-      if (!req.files || !req.files.profilePicture) {
-        return res.status(400).json({
-          success: false,
-          message: 'No file uploaded',
-        });
-      }
-  
-      const profilePicture = req.files.profilePicture;
-      const profileImage = `${Date.now()}_${profilePicture.name}`;
-      const uploadPath = path.join(__dirname, `../public/profile_pictures/${profileImage}`);
-  
-      await profilePicture.mv(uploadPath);
-  
-      res.status(200).json({
-        success: true,
-        message: 'Profile picture uploaded successfully',
-        data: profileImage,
-      });
     } catch (error) {
-      console.error('Error uploading file:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Error uploading file',
-        error: error.message,
-      });
+        console.error('Error uploading file:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error uploading file',
+            error: error.message,
+        });
     }
   }
+
+
   // edit user profile
 const editUserProfile = async (req, res) => {
-    const { firstName, lastName, userName,email, phoneNumber } = req.body;
-    const userId = req.body.userId;
+    const { firstName, lastName, userName,email, phoneNumber,password } = req.body;
+    const userId = req.user.id;
 
     try {
         const user = await User.findById(userId);
@@ -367,6 +380,13 @@ const editUserProfile = async (req, res) => {
         user.email = email;
         user.phoneNumber = phoneNumber;
         user.userName = userName;
+      
+        // Hash the password
+        if (password) {
+            const randomSalt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(password, randomSalt);
+            user.password = hashedPassword;
+        }
 
         await user.save();
 
@@ -395,5 +415,4 @@ module.exports = {
     verifyOtpAndResetPassword,
     uploadProfilePicture,
     editUserProfile
-
 }

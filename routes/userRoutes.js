@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const userController = require('../controllers/userControllers')
+const { authGuard } = require('../middleware/authGuard');
 
 
 
@@ -23,13 +24,6 @@ router.post('/verify_otp', userController.verifyOtpAndResetPassword);
 router.post('/profile_picture/:id',userController.uploadProfilePicture);
 
 // update user details
-router.put('/update', userController.editUserProfile);
-
-
-
-
-
-
-
+router.put('/update',authGuard, userController.editUserProfile);
 
 module.exports = router

@@ -17,7 +17,7 @@ const addFavorite = async (req, res) => {
         const newFavorite = new favouritesModel({ user: userId, product: productId });
         await newFavorite.save();
 
-        res.status(201).json({
+        res.status(200).json({
             success: true,
             message: 'Product added to favorites',
             favorite: newFavorite

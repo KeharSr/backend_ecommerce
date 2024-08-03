@@ -3,14 +3,9 @@ const mongoose = require('mongoose');
 const Database = require('./database/database');
 const dotenv = require('dotenv');
 const cors = require('cors')
-
 const fileUpload = require('express-fileupload');
-
 const { options } = require('./routes/userRoutes');
-
-
 const app = express();
-
 
 
 const corsOptions ={
@@ -19,7 +14,7 @@ const corsOptions ={
     optionSuccessStatus : 200
  }
 
- app.use(cors(corsOptions))
+app.use(cors(corsOptions))
 
 
 app.use(express.json())
@@ -53,12 +48,6 @@ app.use('/api/order', require('./routes/orderRoutes'))
 app.use('/api/review', require('./routes/review&ratingRoutes'))
 
 app.use('/api/favourite', require('./routes/favouritesRoutes'))
-
-
-
-
-
-
 
 
 

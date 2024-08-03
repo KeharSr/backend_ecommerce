@@ -29,13 +29,12 @@ const verifyKhaltiPayment = async (pidx) => {
 const initializeKhaltiPayment = async (details) => {
   const headersList = {
     Authorization: `Key ${process.env.KHALTI_PUBLIC_KEY}`, // Corrected variable name
-    "Content-Type": "application/json", // Changed to JSON
   };
 
   const bodyContent = JSON.stringify(details);
 
   const reqOptions = {
-    url: `${process.env.KHALTI_URL}/api/v2/epayment/initiate/`, // Corrected environment variable
+    url: `${process.env.KHALTI_URL}/api/v2/epayment/initiate/`, 
     method: "POST",
     headers: headersList,
     data: bodyContent,
