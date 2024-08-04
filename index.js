@@ -49,6 +49,38 @@ app.use('/api/review', require('./routes/review&ratingRoutes'))
 
 app.use('/api/favourite', require('./routes/favouritesRoutes'))
 
+app.use('/api/khalti',  require('./routes/khaltiRoutes'));
+
+
+app.post("/khalti-api", async (req, res) => {
+    try {
+        const payload = req.body;
+        const khaltiResponse = await axios.post("https://a.khalti.com/api/v2/epayment/initiate/", payload, {
+            headers: {
+                Authorization: `Key ${process.env.KHALTI_SECRET_KEY}`,
+            },
+        });
+
+        if (khaltiResponse.data) {
+            res.send({
+                success: true,
+                data: khaltiResponse.data
+            });
+        } else {
+            res.send({
+                success: false,
+                message: "Error in initiating"
+            });
+        }
+    } catch (error) {
+        console.error("Error initiating Khalti payment:", error.response ? error.response.data : error.message);
+        res.status(500).send({
+            success: false,
+            message: "Error in initiating",
+            error: error.message
+        });
+    }
+});
 
 
 app.listen(PORT, ()=>{

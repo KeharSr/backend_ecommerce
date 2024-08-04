@@ -80,12 +80,7 @@ const getReviewsByProduct = async (req, res) => {
     try {
         const reviews = await Review.find({ product: productId })
 
-        if (reviews.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'No reviews found for this product'
-            });
-        }
+        
 
         res.status(200).json({
             success: true,
