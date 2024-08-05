@@ -33,7 +33,7 @@ Database()
 const PORT = process.env.PORT;
 
 app.get('/Lensify',(req,res)=>{
-    res.send('Test API is working!....')
+    res.send('Test API is Working!....')
 }) 
 
 
@@ -50,6 +50,7 @@ app.use('/api/review', require('./routes/review&ratingRoutes'))
 app.use('/api/favourite', require('./routes/favouritesRoutes'))
 
 app.use('/api/khalti',  require('./routes/khaltiRoutes'));
+
 
 
 app.post("/khalti-api", async (req, res) => {
@@ -83,9 +84,12 @@ app.post("/khalti-api", async (req, res) => {
 });
 
 
+
+
 app.listen(PORT, ()=>{
     console.log(`Server is Running on port ${PORT} !`)
 }) 
 
 
+module.exports = app;
 
