@@ -1,4 +1,5 @@
 const request = require('supertest');
+const path = require('path');
 
 // Import the express app
 
@@ -70,6 +71,62 @@ describe('',()=>{
             expect(response.body.message).toEqual( "User Logged in Successfully!" );
         }
     });
+
+    // testcase(3) for get current user
+    it('GET /api/user/current | Response with body', async () => {
+        const response = await request(app).get('/api/user/current').set('Authorization', `Bearer ${token}`);
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body.success).toBe(true);
+    }
+    );
+
+    // testcase(4) for adding product
+    // it('POST /api/product/create | Response with body', async () => {
+    //     const response = await request(app).post('/api/product/create').send({
+    //         productName: 'Product 1',
+    //         productPrice: 100,
+    //         productCategory: 'Category 1',
+    //         productDescription: 'Description 1',
+    //         productQuantity: 10,
+    //         productImage: ('productImage', path.join(__dirname, 'testImage.jpg'))
+    //     });
+
+    //     expect(response.statusCode).toBe(201);
+    //     expect(response.body.success).toBe(true);
+    // });
+
+    // testcase(5) for getting all products
+    it('GET Products | Fetch all products',async()=>{
+        const response = await request(app).get('/api/product/get_all_products').set('authorization',`Bearer ${token}`);
+        expect (response.statusCode).toBe(201);
+        expect (response.body).toBeDefined();
+        expect(response.body.message).toEqual('Products Fetched Successfully!')
+    })
+
+    // testcase(6) for getting single product
+    it('GET Single Product | Fetch single product', async () => {
+        const response = await request(app).get('/api/product/get_single_product/66881b58d7263074b6405d66').set('authorization', `Bearer ${token}`);
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toBeDefined();
+        expect(response.body.message).toEqual('product fetched');
+    });
+
+    // testcase(7) for adding product to cart
+    it('POST /api/cart/add_to_cart | Response with body', async () => {
+        const response = await request(app).post('/api/cart/add_to_cart').set('authorization', `Bearer ${token}`).send({
+            productId: '66881b58d7263074b6405d66',
+            quantity: 1
+        });
+
+        expect(response.statusCode).toBe(201);
+        expect(response.body.success).toBe(true);
+    });
+
+    
+    
+
+
 
     
     
