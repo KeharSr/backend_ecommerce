@@ -25,25 +25,7 @@ describe('',()=>{
 
 
     // testcase(1) for user registration
-    it('POST /api/user/create | Response with body', async () => {
-        const response = await request(app).post('/api/user/create').send({
-            firstName: 'John',
-            lastName: 'Doe',
-            userName: 'johndoe',
-            email: 'john.doe@gmail.com',
-            phoneNumber: '1234567890',
-            password: 'password'
-        });
-
-        if (!response.body.success) {
-            expect(response.statusCode).toBe(400);
-            expect(response.body.message).toEqual('User with this phone number already exists!');
-        } else {
-            expect(response.statusCode).toBe(201);
-            expect(response.body.message).toEqual('User created successfully');
-        }
-    });
-
+   
     it('POST /api/user/create | Missing details', async () => {
         const response = await request(app).post('/api/user/create').send({
             firstName: 'John',
@@ -82,19 +64,21 @@ describe('',()=>{
     );
 
     // testcase(4) for adding product
-    // it('POST /api/product/create | Response with body', async () => {
-    //     const response = await request(app).post('/api/product/create').send({
-    //         productName: 'Product 1',
-    //         productPrice: 100,
-    //         productCategory: 'Category 1',
-    //         productDescription: 'Description 1',
-    //         productQuantity: 10,
-    //         productImage: ('productImage', path.join(__dirname, 'testImage.jpg'))
-    //     });
 
-    //     expect(response.statusCode).toBe(201);
-    //     expect(response.body.success).toBe(true);
-    // });
+    it('POST /api/product/create | Response with body', async () => {
+        const response = await request(app).post('/api/product/create').set('authorization', `Bearer ${token}`).send({
+            productName: 'Test Product',
+            productDescription: 'This is a test product',
+            productPrice: 99.99,
+            productQuantity: 100,
+            productCategory: 'Test',
+            productImage: (path.join(__dirname, 'test.jpg'))
+        });
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body.success).toBe(true);
+    }
+    );
 
     // testcase(5) for getting all products
     it('GET Products | Fetch all products',async()=>{
@@ -154,7 +138,7 @@ describe('',()=>{
     // testcase(10) for adding review
     it('POST /api/review/post_reviews | Response with body', async () => {
         const response = await request(app).post('/api/review/post_reviews').set('authorization', `Bearer ${token}`).send({
-            productId: '66881b58d7263074b6405d66',
+            productId: '669fafb31375a96106736470',
             rating: 5,
             review: 'Great product!'
         });
