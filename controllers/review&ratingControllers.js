@@ -8,7 +8,8 @@ const { default: mongoose } = require('mongoose');
 const createReview = async (req, res) => {
     const { rating, review, productId } = req.body;
     const id = req.user.id; 
-    console.log(id);
+    console.log('User ID:', id);
+    console.log('Request Body:', req.body);
 
     try {
         // Check if the user has already posted a review for this product
@@ -32,7 +33,7 @@ const createReview = async (req, res) => {
             user: id
         });
 
-        
+        console.log('New review created:', newReview);
 
         res.status(201).json({
             success: true,
@@ -40,6 +41,7 @@ const createReview = async (req, res) => {
             review: newReview
         });
     } catch (error) {
+        console.error('Error adding review:', error);
         res.status(500).json({ success: false, message: "Error adding review", error: error.message });
     }
 };

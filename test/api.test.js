@@ -115,7 +115,7 @@ describe('',()=>{
     // testcase(7) for adding product to cart
     it('POST /api/cart/add_to_cart | Response with body', async () => {
         const response = await request(app).post('/api/cart/add_to_cart').set('authorization', `Bearer ${token}`).send({
-            productId: '66881b58d7263074b6405d66',
+            productId: '668d19d3545b7f4efec6f99c',
             quantity: 1
         });
 
@@ -123,13 +123,52 @@ describe('',()=>{
         expect(response.body.success).toBe(true);
     });
 
+    // testcase(8) for adding product to favorites
+    it('POST /api/favourite/add_favourite | Response with body', async () => {
+        const response = await request(app).post('/api/favourite/add_favourite').set('authorization', `Bearer ${token}`).send({
+            productId: '66881b58d7263074b6405d66'
+        });
     
+        if (response.statusCode !== 200) {
+            console.log(response.body);
+        }
+    
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toBeDefined();
+        expect(response.body.message).toEqual('Product added to favorites');
+    });
+
+    // testcase(9) for getting all favorites
+    it('GET /api/favourite/get_favourite | Response with body', async () => {
+        const response = await request(app).get('/api/favourite/get_favourite').set('authorization', `Bearer ${token}`);
+    
+        if (response.statusCode !== 200) {
+            console.log(response.body);
+        }
+    
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toBeDefined();
+        expect(response.body.message).toEqual('Favorites fetched successfully');
+    });
+
+    // testcase(10) for adding review
+    it('POST /api/review/post_reviews | Response with body', async () => {
+        const response = await request(app).post('/api/review/post_reviews').set('authorization', `Bearer ${token}`).send({
+            productId: '66881b58d7263074b6405d66',
+            rating: 5,
+            review: 'Great product!'
+        });
+    
+        if (response.statusCode !== 201) {
+            console.log('Response Body:', response.body);
+        }
+    
+        expect(response.statusCode).toBe(201);
+        expect(response.body).toBeDefined();
+        expect(response.body.message).toEqual('Review added successfully');
+    });
     
 
-
-
-    
-    
  })
 
 
