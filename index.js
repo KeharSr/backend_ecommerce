@@ -49,7 +49,7 @@ app.use('/api/review', require('./routes/review&ratingRoutes'))
 
 app.use('/api/favourite', require('./routes/favouritesRoutes'))
 
-app.use('/api/khalti',  require('./routes/khaltiRoutes'));
+app.use('/api/khalti',  require('./routes/paymentRoutes'));
 
 
 
