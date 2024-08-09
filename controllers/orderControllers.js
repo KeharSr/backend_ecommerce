@@ -25,17 +25,17 @@ const placeOrder = async (req, res) => {
             products,
             totalPrice,
             address,
-            payment
+            // payment
         });
 
         // Save the order
         const savedOrder = await newOrder.save();
 
         // Check payment status
-        if (payment) {
-            // If payment is done, empty the user's cart
-            await cartModel.updateOne({ _id: userId }, { $set: { product: [] } });
-        }
+        // if (payment) {
+        //     // If payment is done, empty the user's cart
+        //     await cartModel.updateOne({ _id: userId }, { $set: { product: [] } });
+        // }
        
         // Return success response
         res.status(201).json({

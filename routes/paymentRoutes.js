@@ -3,7 +3,7 @@ const router = require('express').Router();
 const paymentController = require('../controllers/paymentControllers');
 const { authGuard } = require('../middleware/authGuard');
 
-router.post('/add', authGuard, paymentController.addPayment);
-router.post('/khalti', paymentController.viewKhaltiPayment);
+router.post('/initialize-khalti', paymentController.initializePayment);
+router.get('/complete-khalti-payment', paymentController.completeKhaltiPayment);
 
 module.exports = router;

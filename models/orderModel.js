@@ -44,7 +44,9 @@ const orderSchema = new mongoose.Schema({
     payment: {
         type: Boolean,
         default: false
-    }
+    },  
+    paymentMethod: { type: String, enum: ["khalti"], default: "khalti" },
+
 });
 
 const Order = mongoose.model('Order', orderSchema);
