@@ -292,6 +292,49 @@ const getProductsByCategory = async (req, res) => {
     }
 };
 
+// search products by name
+const searchProducts = async (req, res) => {
+    const search = req.query.search;
+    console.log(search);
+
+    const pageNo = parseInt(req.query.page || 1);
+    const limit = parseInt(req.query.limit || 10);
+    let products; // Declare products here to make it accessible throughout the function
+
+    try {
+        if (search === 'All') {
+            products = await productModel.find({})
+                .skip((pageNo - 1) * limit)
+                .limit(limit);
+        } else {
+            products = await productModel.find({ ...(search && { productName: search }) })
+                .skip((pageNo - 1) * limit)
+                .limit(limit);
+        }
+
+        if (!products || products.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'No products found for this search',
+            });
+        }
+
+        res.status(201).json({
+            success: true,
+            message: 'Products fetched successfully by search',
+            products: products,
+            
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error,
+        });
+    }
+};
+
 
 
 
@@ -306,5 +349,6 @@ module.exports = {
     updateProduct,
     paginatonProducts,
     getProductsByCategory,
+    searchProducts
     
 };
