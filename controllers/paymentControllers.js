@@ -13,7 +13,13 @@ const initializePayment = async (req, res) => {
     const itemData = await OrderModel.findOne({
       _id: orderId,
       totalPrice: Number(totalPrice),
-    }).populate('products.productId');
+    }).populate("carts").populate({
+      path: 'carts',
+      populate: {
+          path    : 'productId',
+          model   : 'product'
+      }
+  })
 
     if (!itemData) {
       return res.send({
@@ -21,12 +27,13 @@ const initializePayment = async (req, res) => {
         message: "Order not found",
       });
     }
-
+    console.log(itemData.carts);
     // Extract product names from populated products array
-    const productNames = itemData.products.map(p => p.productId.name).join(", ");
+    const productNames = itemData.carts.map(p => p.productId.productName).join(", ");
     
     if (!productNames) {
       return res.send({
+    
         success: false,
         message: "No product names found",
       });

@@ -6,32 +6,47 @@ const orderSchema = new mongoose.Schema({
         ref: 'user',
         required: true
     },
-    products: [{
-        productId: {
+    carts: [
+        {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'product',  // Make sure this matches your Product model name
+            ref: 'Cart',
             required: true
-        },
-        
-        quantity: {
-            type: Number,
-            required: true,
-            min: 1  // Ensure there's at least one product
         }
-        
-    }],
+    ],
     totalPrice: {
         type: Number,
         required: true
     },
-    address: {
-        type: Object,
-        street: String,
-        city: String,
-        state: String,
-        zip: String,
-        country: String,
-        required: true,
+    name: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true
+    },
+    street: {
+        type: String,
+        required: true
+    },
+    city: {
+        type: String,
+        required: true
+    },
+    state: {
+        type: String,
+        required: true
+    },
+    zipCode: {
+        type: String,
+        required: true
+    },
+    country: {
+        type: String,
+        required: true
+    },
+    phone: {
+        type: String,
     },
     status: {
         type: String,

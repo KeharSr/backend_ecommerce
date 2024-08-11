@@ -1,30 +1,39 @@
 const orderModel = require('../models/orderModel');
 const userModel = require('../models/userModel'); 
 const cartModel = require('../models/cartModel');
+const { path } = require('..');
 
-// Placing user order from cart
 const placeOrder = async (req, res) => {
-    const userId = req.user.id;// Using authenticated user's ID from session
+    const userId = req.user.id;
     console.log(req.body) 
 
     try {
-        const { products, totalPrice, address, payment } = req.body;
+        const { carts, totalPrice, name,email,street,city,state,zipCode,country,phone, payment } = req.body;
 
-        // Ensure products array is not empty, and other required fields are present
-        if (!products || products.length === 0 ) {
+
+        if (!carts || carts.length === 0 ) {
             return res.status(400).send({ message: "No products added to the order" });
         }
 
-        if (!totalPrice || !address) {
+        if (!totalPrice || !name || !email || !street || !city || !state || !zipCode || !country || !phone) {
             return res.status(400).send({ message: "Missing total price or address details." });
         }
 
         // Create new order
         const newOrder = new orderModel({
-            userId, // Using userId from session for security
-            products,
+            userId, 
+            carts,
             totalPrice,
-            address,
+            name,
+            email,
+            street,
+            city,
+            state,
+            zipCode,
+            country,
+            phone,
+
+            
             // payment
         });
 
@@ -39,6 +48,7 @@ const placeOrder = async (req, res) => {
        
         // Return success response
         res.status(201).json({
+            success:true,
             message: "Order placed successfully",
             order: savedOrder
         });
@@ -54,7 +64,13 @@ const placeOrder = async (req, res) => {
 // Admin: Get All Orders
 const getAllOrders = async (req, res) => {
     try {
-        const orders = await orderModel.find({}).populate("products.productId");
+        const orders = await orderModel.find({}).populate("carts").populate({
+            path: 'carts',
+            populate: {
+                path    : 'productId',
+                model   : 'product'
+            }
+        });
 
         // Check if the orders array is empty
         if (orders.length === 0) {
@@ -84,7 +100,14 @@ const getAllOrders = async (req, res) => {
 const getOrdersByUser = async (req, res) => {
     const userId = req.user.id;
     try {
-        const orders = await orderModel.find({ userId }).populate("products.productId");
+        const orders = await orderModel.find({ userId })
+        .populate("carts").populate({
+            path: 'carts',
+            populate: {
+                path    : 'productId',
+                model   : 'product'
+            }
+        })
 
         // Check if the orders array is empty
         if (orders.length === 0) {
@@ -109,6 +132,9 @@ const getOrdersByUser = async (req, res) => {
         });
     }
 } 
+
+
+
 
 // update order status
 const updateOrderStatus = async (req, res) => {
