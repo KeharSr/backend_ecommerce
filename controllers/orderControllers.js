@@ -50,7 +50,7 @@ const placeOrder = async (req, res) => {
         res.status(201).json({
             success:true,
             message: "Order placed successfully",
-            order: savedOrder
+            order_id: savedOrder._id
         });
     } catch (error) {
         console.error('Failed to place order:', error);
@@ -137,27 +137,58 @@ const getOrdersByUser = async (req, res) => {
 
 
 // update order status
+// const updateOrderStatus = async (req, res) => {
+//     const { orderId } = req.params;
+//     const { status } = req.body;
+
+//     try{
+//         await orderModel.findByIdAndUpdate(orderId, { status }, { new: true });
+//         res.status(200).json({
+//             success: true,
+//             message: "Order status updated successfully",
+            
+//         });
+//     }
+//     catch(error){
+//         console.log( error);
+//         res.status(500).json({
+//             success: false,
+//             message: "Internal server error"
+//         });
+//     }
+// }
+
 const updateOrderStatus = async (req, res) => {
     const { orderId } = req.params;
     const { status } = req.body;
 
-    try{
-        await orderModel.findByIdAndUpdate(orderId, { status }, { new: true });
+    try {
+        // Update the order status
+        const updatedOrder = await orderModel.findByIdAndUpdate(orderId, { status }, { new: true });
+
+        // Check if the status is 'delivered'
+        if (status.toLowerCase() === 'Delivered') {
+            // If delivered, remove the order
+            await orderModel.findByIdAndDelete(orderId);
+            return res.status(200).json({
+                success: true,
+                message: "Order status updated to delivered and order removed successfully",
+            });
+        }
+
+        // If not delivered, return success message
         res.status(200).json({
             success: true,
             message: "Order status updated successfully",
-            
         });
-    }
-    catch(error){
-        console.log( error);
+    } catch (error) {
+        console.log(error);
         res.status(500).json({
             success: false,
             message: "Internal server error"
         });
     }
-}
-
+};
 
 module.exports = {
     placeOrder,

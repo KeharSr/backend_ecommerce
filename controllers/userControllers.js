@@ -449,7 +449,7 @@ const googleLogin = async (req, res) => {
 
     // generate token
     const jwtToken = await jwt.sign(
-      { id: user._id, role: user.role },
+      { id: user._id, isAdmin: user.isAdmin },
       process.env.JWT_SECRET,
       (options = {
         expiresIn:
