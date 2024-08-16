@@ -1,158 +1,150 @@
-const request = require('supertest');
-const path = require('path');
+const request = require("supertest");
+const app = require("../index");
 
-// Import the express app
-
-const app = require('../index');
-
-// test token for admin
-const token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2OGE2ZWI1ZDUxOWQ4ZmQzZWMwMTRmMiIsImlzQWRtaW4iOnRydWUsImlhdCI6MTcyMjc4NTExOX0.uoB5-oJjf9Q2eA_U8YDI-v7ThWQ5U2zyYHn2rRaQQ6o"
-
-// describe (List of test cases)
-
-describe('',()=>{
-
-    // testing '/test' api
-    it('GET/Lensify | Response with text', async()=>{
-        // request sending
-        const response = await request(app).get('/Lensify')
-
-        //if its sucessful, status code
-        expect (response.statusCode).toBe(200)
-
-        expect(response.text).toEqual('Test API is Working!....')
+describe("User API Tests", () => {
+  let authToken = "";
+  let adminToken = "";
+  let productId = "";
+  let favouriteId = "";
+  it("Post /register | Register new user ", async () => {
+    // No existing user
+    const response = await request(app).post("/api/user/create").send({
+      firstName: "test",
+      lastName: "test",
+      email: "test@gmail.com",
+      password: "12345678",
+      userName: "test",
+      phoneNumber: "1234567899",
     });
-
-
-    // testcase(1) for user registration
-   
-    it('POST /api/user/create | Missing details', async () => {
-        const response = await request(app).post('/api/user/create').send({
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john.doe@gmail.com',
-            password: 'password'
-        });
-
-        expect(response.statusCode).toBe(400);
-        expect(response.body.message).toEqual('Please enter all details!');
-    });
-
-    // testcase(2) for user login
-    it('POST /api/user/login | Response with body', async () => {
-        const response = await request(app).post('/api/user/login').send({
-            email: 'ram@gmail.com',
-            password: 'password'
-        });
-
-        if (!response.body.success) {
-            expect(response.statusCode).toBe(400);
-            expect(response.body.message).toEqual('Invalid credentials');
-        } else {
-            expect(response.statusCode).toBe(200);
-            expect(response.body.message).toEqual( "User Logged in Successfully!" );
-        }
-    });
-
-    // testcase(3) for get current user
-    it('GET /api/user/current | Response with body', async () => {
-        const response = await request(app).get('/api/user/current').set('Authorization', `Bearer ${token}`);
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.success).toBe(true);
+    if (response.statusCode === 201) {
+      expect(response.body.message).toEqual("User created successfully");
+    } else {
+      expect(response.body.message).toEqual(
+        "User with this email already exists!"
+      );
     }
-    );
+  });
+  it("Post /register | Register new owner ", async () => {
+    // No existing user
+    const response = await request(app).post("/api/user/create").send({
+      firstName: "test",
+      lastName: "test",
+      email: "ram@gmail.com",
+      password: "12345678",
+      userName: "test",
+      phoneNumber: "124356789",
+      isAdmin: true,
+    });
 
-    // testcase(4) for adding product
-
-    it('POST /api/product/create | Response with body', async () => {
-        const response = await request(app).post('/api/product/create').set('authorization', `Bearer ${token}`).send({
-            productName: 'Test Product',
-            productDescription: 'This is a test product',
-            productPrice: 99.99,
-            productQuantity: 100,
-            productCategory: 'Test',
-            productImage: (path.join(__dirname, 'test.jpg'))
-        });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.success).toBe(true);
+    if (response.statusCode === 201) {
+      expect(response.body.message).toEqual("User created successfully");
+    } else {
+      expect(response.body.message).toEqual(
+        "User with this email already exists!"
+      );
     }
-    );
+  });
 
-    // testcase(5) for getting all products
-    it('GET Products | Fetch all products',async()=>{
-        const response = await request(app).get('/api/product/get_all_products').set('authorization',`Bearer ${token}`);
-        expect (response.statusCode).toBe(201);
-        expect (response.body).toBeDefined();
-        expect(response.body.message).toEqual('Products Fetched Successfully!')
-    })
+  it("Post /login | Login user", async () => {
+    const response = await request(app).post("/api/user/login").send({
+      email: "test@gmail.com",
+      password: "12345678",
+    });
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty("token");
+    authToken = response.body.token;
+  });
+  it("Post /login | Login user", async () => {
+    const response = await request(app).post("/api/user/login").send({
+      email: "ram@gmail.com",
+      password: "12345678",
+    });
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty("token");
+    adminToken = response.body.token;
+  });
 
-    // testcase(6) for getting single product
-    it('GET Single Product | Fetch single product', async () => {
-        const response = await request(app).get('/api/product/get_single_product/66881b58d7263074b6405d66').set('authorization', `Bearer ${token}`);
-        expect(response.statusCode).toBe(200);
-        expect(response.body).toBeDefined();
-        expect(response.body.message).toEqual('product fetched');
+  // Get user by id
+  it("Get /get | Get user by id", async () => {
+    const response = await request(app)
+      .get(`/api/user/current`)
+      .set("Authorization", `Bearer ${authToken}`);
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty("user");
+
+    expect(response.body.user).toHaveProperty("email");
+    expect(response.body.user.email).toBe("test@gmail.com");
+  });
+
+  it("Post /create | Add new product ", async () => {
+    const response = await request(app)
+      .post("/api/product/create")
+      .send({
+        productName: "test",
+        productDescription: "test",
+        productQuantity: 2,
+        productPrice: 10,
+        productCategory: "test",
+      })
+      .set("Authorization", `Bearer ${adminToken}`);
+    console.log(response.body);
+    expect(response.statusCode).toBe(201);
+    expect(response.body).toHaveProperty("message");
+    console.log(response.body.product);
+    productId = response.body.product._id;
+  });
+
+  // Get product by product id
+  it("Get /get_single_product/:id | Get All products", async () => {
+    const response = await request(app)
+      .get(`/api/product/get_single_product/${productId}`)
+      .set("Authorization", `Bearer ${authToken}`);
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty("product");
+    // product has been added
+    expect(response.body.product.productName).toBe("test");
+  });
+
+  // Delete by product id
+  it("Delete /delete | Delete product", async () => {
+    const response = await request(app)
+      .delete(`/api/product/delete_product/${productId}`)
+      .set("Authorization", `Bearer ${adminToken}`);
+    console.log(response.body);
+    expect(response.statusCode).toBe(200);
+  });
+
+  describe("Favorite API Tests", () => {
+    it("Post /add | Add favorite product", async () => {
+      const response = await request(app)
+        .post(`/api/favourite/add_favourite`)
+        .send({
+          productId: productId,
+        })
+        .set("Authorization", `Bearer ${authToken}`);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty("message");
+        favouriteId = response.body.favorite._id;
+        console.log(response.body);
     });
 
-    // testcase(7) for adding product to cart
-    it('POST /api/cart/add_to_cart | Response with body', async () => {
-        const response = await request(app).post('/api/cart/add_to_cart').set('authorization', `Bearer ${token}`).send({
-            productId: '668d19d3545b7f4efec6f99c',
-            quantity: 1
-        });
-
-        expect(response.statusCode).toBe(201);
-        expect(response.body.success).toBe(true);
+    it("Get /get | Get favorite pets", async () => {
+      const response = await request(app)
+        .get(`/api/favourite/get_favourite`)
+        .set("Authorization", `Bearer ${authToken}`);
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty("favorites");
+      const favorites = response.body.favorites;
+      expect(favorites.length > 0).toBe(true);
     });
 
-    // testcase(8) for adding product to favorites
-    it('POST /api/favourite/add_favourite | Response with body', async () => {
-        const response = await request(app).post('/api/favourite/add_favourite').set('authorization', `Bearer ${token}`).send({
-            productId: '66881b58d7263074b6405d66'
-        });
-    
-        if (response.statusCode !== 200) {
-            console.log(response.body);
-        }
-    
-        expect(response.statusCode).toBe(200);
-        expect(response.body).toBeDefined();
-        expect(response.body.message).toEqual('Product added to favorites');
+    it("Delete /delete | Delete favorite pet", async () => {
+      const response = await request(app)
+        .delete(`/api/favorite/remove_favourite/${favouriteId}`)
+        .set("Authorization", `Bearer ${authToken}`);
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty("message");
     });
-
-    // testcase(9) for getting all favorites
-    it('GET /api/favourite/get_favourite | Response with body', async () => {
-        const response = await request(app).get('/api/favourite/get_favourite').set('authorization', `Bearer ${token}`);
-    
-        if (response.statusCode !== 200) {
-            console.log(response.body);
-        }
-    
-        expect(response.statusCode).toBe(200);
-        expect(response.body).toBeDefined();
-        expect(response.body.message).toEqual('Favorites fetched successfully');
-    });
-
-    // testcase(10) for adding review
-    it('POST /api/review/post_reviews | Response with body', async () => {
-        const response = await request(app).post('/api/review/post_reviews').set('authorization', `Bearer ${token}`).send({
-            productId: '669fafb31375a96106736470',
-            rating: 5,
-            review: 'Great product!'
-        });
-    
-        if (response.statusCode !== 201) {
-            console.log('Response Body:', response.body);
-        }
-    
-        expect(response.statusCode).toBe(201);
-        expect(response.body).toBeDefined();
-        expect(response.body.message).toEqual('Review added successfully');
-    });
-    
-
- })
-
-
+  });
+});

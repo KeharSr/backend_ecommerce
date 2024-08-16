@@ -49,6 +49,6 @@ router.get('/get_single_product/:id', authGuard, productController.getSingleProd
 router.get('/pagination', productController.paginatonProducts);
 
 // search products
-router.get('/search', productController.searchProducts);
+router.get('/search', productController.searchProductsByName);
 
 module.exports = router;
