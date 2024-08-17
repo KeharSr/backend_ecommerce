@@ -48,4 +48,7 @@ router.get('/get_single_product/:id', authGuard, productController.getSingleProd
 // Pagination example route
 router.get('/pagination', productController.paginatonProducts);
 
+// search products
+router.get('/search', productController.searchProductsByName);
+
 module.exports = router;

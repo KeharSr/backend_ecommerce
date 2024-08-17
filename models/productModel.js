@@ -21,7 +21,7 @@ const productSchema = new mongoose.Schema({
     },
     productImage: {
         type: String,
-        required: true
+        default:null
     },
     createdAt:{
         type: Date,
@@ -29,10 +29,10 @@ const productSchema = new mongoose.Schema({
     
     },
     productQuantity:{
-        type: Number,
-        
-        
+        type: Number,  
     },
+    
+    
 
 })
 

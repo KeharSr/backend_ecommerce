@@ -23,8 +23,6 @@ const userSchema = new mongoose.Schema({
 
     phoneNumber:{
         type : String,
-        required: true,
-        unique: true,
     },
 
     resetPasswordOTP: {
@@ -36,8 +34,6 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
-    
-
     password : {
         type : String,
         required : true
@@ -47,6 +43,14 @@ const userSchema = new mongoose.Schema({
         type : Boolean,
         default : false
     },
+    profilePicture : {
+        type : String,
+       
+    },
+    fromGoogle: {
+        type: Boolean,
+        default: false,
+      },
     
 
 })

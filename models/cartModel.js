@@ -20,6 +20,10 @@ const cartSchema = new mongoose.Schema({
         type: Number,
         default: 1,
         
+    },
+    status: {
+        type: String,
+        default: 'active'
     }
     
 });

@@ -7,7 +7,8 @@ const sendOtp = async (phoneNumber, otp) => {
 
     // payload to send
     const payload = {
-        apiKey: '8d6ad695-1dff-4c9e-9eb4-b6ba8f4465ee',
+        // apiKey: '8d6ad695-1dff-4c9e-9eb4-b6ba8f4465ee',
+        apiKey: '83283bb1-1305-4e81-b1d2-5323c97e5e88',
         to : phoneNumber,
         message: `Your OTP is ${otp}`
     }
