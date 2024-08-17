@@ -227,8 +227,9 @@ const paginatonProducts = async (req, res) => {
 //get products by category
 
 const getProductsByCategory = async (req, res) => {
-  const category = req.query.category;
-  const search = req.query.search;
+  const category = req.query.category || "All";
+  const search = req.query.search || "";
+  
   console.log(category);
 
   const pageNo = parseInt(req.query.page || 1);
