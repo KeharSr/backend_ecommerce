@@ -14,7 +14,7 @@ describe("User API Tests", () => {
       email: "test@gmail.com",
       password: "12345678",
       userName: "test",
-      phoneNumber: "1234567899",
+      phoneNumber: "111111111",
     });
     if (response.statusCode === 201) {
       expect(response.body.message).toEqual("User created successfully");
@@ -129,7 +129,7 @@ describe("User API Tests", () => {
         console.log(response.body);
     });
 
-    it("Get /get | Get favorite pets", async () => {
+    it("Get /get | Get favorite product", async () => {
       const response = await request(app)
         .get(`/api/favourite/get_favourite`)
         .set("Authorization", `Bearer ${authToken}`);
@@ -139,7 +139,7 @@ describe("User API Tests", () => {
       expect(favorites.length > 0).toBe(true);
     });
 
-    it("Delete /delete | Delete favorite pet", async () => {
+    it("Delete /delete | Delete favorite product", async () => {
       const response = await request(app)
         .delete(`/api/favorite/remove_favourite/${favouriteId}`)
         .set("Authorization", `Bearer ${authToken}`);
